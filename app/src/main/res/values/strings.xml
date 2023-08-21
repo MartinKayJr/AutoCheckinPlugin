@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AutoCheckinPlugin</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="msg_yesno_def_title">请确认</string>
+    <string name="msg_yesno_def_message">你确定吗?</string>
+</resources>

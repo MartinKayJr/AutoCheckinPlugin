@@ -1,0 +1,25 @@
+[versions]
+agp = "8.1.0"
+junit = "4.13.2"
+androidx-test-ext-junit = "1.1.5"
+espresso-core = "3.5.1"
+appcompat = "1.6.1"
+material = "1.9.0"
+constraintlayout = "2.1.4"
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+fastjson = { module = "com.alibaba:fastjson", version = "1.1.72.android" }
+apache-commons = { module = "org.apache.commons:commons-lang3", version = "3.7" }
+gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
+
+[plugins]
+com-android-application = { id = "com.android.application", version.ref = "agp" }
+
+[bundles]
+
