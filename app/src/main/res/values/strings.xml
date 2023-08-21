@@ -4,4 +4,5 @@
     <string name="no">No</string>
     <string name="msg_yesno_def_title">请确认</string>
     <string name="msg_yesno_def_message">你确定吗?</string>
+    <string name="acc_desc">打开开关，自动帮你打卡</string>
 </resources>

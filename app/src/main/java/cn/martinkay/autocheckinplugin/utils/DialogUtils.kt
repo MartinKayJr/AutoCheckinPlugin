@@ -1,12 +1,11 @@
-
 package cn.martinkay.autocheckin.utils
 
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.view.LayoutInflater
 import android.view.View
-import cn.martinkay.autocheckin.R
-import cn.martinkay.autocheckin.databinding.LayoutDialogProgressBinding
+import cn.martinkay.autocheckinplugin.R
+import cn.martinkay.autocheckinplugin.databinding.LayoutDialogProgressBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.jetbrains.annotations.Contract
 

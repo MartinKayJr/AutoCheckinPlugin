@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,7 +29,7 @@ import java.util.List;
 import cn.martinkay.autocheckinplugin.adapter.AutoConfigAdapter;
 import cn.martinkay.autocheckinplugin.entity.AutoConfig;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityV2 extends AppCompatActivity {
 
     ListView checkinList;
 
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_v2);
 
         sharedPreferences = getSharedPreferences("auto_checkin", MODE_PRIVATE);
 
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             // Gson解析 List<AutoConfig>
             autoConfigList = new Gson().fromJson(autoConfigString, new TypeToken<List<AutoConfig>>(){}.getType());
-            AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivity.this, autoConfigList);
+            AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivityV2.this, autoConfigList);
             checkinList.setAdapter(autoConfigAdapter);
         }
     }
@@ -77,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 // 确定删除吗
-                MaterialAlertDialogBuilder confirmDialog = new MaterialAlertDialogBuilder(MainActivity.this);
+                MaterialAlertDialogBuilder confirmDialog = new MaterialAlertDialogBuilder(MainActivityV2.this);
                 confirmDialog.setTitle("确定删除吗？");
-                confirmDialog.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                confirmDialog.setPositiveButton("确定删除", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         autoConfigList.remove(position);
-                        AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivity.this, autoConfigList);
+                        AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivityV2.this, autoConfigList);
                         checkinList.setAdapter(autoConfigAdapter);
                         // 保存配置
                         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -91,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.commit();
                     }
                 });
+                confirmDialog.show();
                 return false;
             }
         });
@@ -98,13 +98,13 @@ public class MainActivity extends AppCompatActivity {
         addCheckinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.add_rule_layout, null);
+                View dialogView = LayoutInflater.from(MainActivityV2.this).inflate(R.layout.add_rule_layout, null);
                 // 生效星期
                 Button activeWeekTimeButton = dialogView.findViewById(R.id.active_week_time_button);
                 activeWeekTimeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MaterialAlertDialogBuilder weekDialog = new MaterialAlertDialogBuilder(MainActivity.this);
+                        MaterialAlertDialogBuilder weekDialog = new MaterialAlertDialogBuilder(MainActivityV2.this);
                         weekDialog.setTitle("生效星期");
                         weekDialog.setMultiChoiceItems(R.array.week_time, weekTimeChecked, new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // 时间选择器 单位秒
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivityV2.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(@NotNull TimePicker view, int hourOfDay, int minute) {
                                 activeTimeButton.setText(hourOfDay + ":" + minute);
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         autoConfig.setActiveWeek(stringBuilder.toString());
                         autoConfig.setActiveTime(activeTimeButton.getText().toString());
                         autoConfigList.add(autoConfig);
-                        AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivity.this, autoConfigList);
+                        AutoConfigAdapter autoConfigAdapter = new AutoConfigAdapter(MainActivityV2.this, autoConfigList);
                         checkinList.setAdapter(autoConfigAdapter);
 
                         // 将list转为json字符串存储到本地
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                new MaterialAlertDialogBuilder(MainActivity.this)
+                new MaterialAlertDialogBuilder(MainActivityV2.this)
                         .setTitle("添加签到规则")
                         .setView(dialogView)
                         .setNegativeButton("取消", null)
