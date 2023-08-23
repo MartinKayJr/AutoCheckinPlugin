@@ -1,6 +1,7 @@
 package cn.martinkay.autocheckinplugin
 
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -8,14 +9,25 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import cn.martinkay.autocheckinplugin.service.BackgroundAccess
 import cn.martinkay.autocheckinplugin.service.SignService
+import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
+import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
+import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
 
 
 const val PACKAGE_WECHAT_WORK = "com.tencent.wework"
 
 class MainActivity : AppCompatActivity() {
+
+    private var isEnableAutoSign = false
+
+    private lateinit var mEnableAutoSignSwitch: CheckBox
+
+    private var accessblity = false
 
     /**
      * 范围
@@ -70,13 +82,63 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAfternoonStartCheckinSatus: CheckBox
     private lateinit var mAfternoonEndCheckinSatus: CheckBox
 
+    private lateinit var accessbilitySwitch: CheckBox
+    private lateinit var canBackgroundSwitch: CheckBox
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
+        initSetting()
+
+        isOpenService()
+        isCanBackground()
     }
 
+    override fun onResume() {
+        isOpenService()
+        isCanBackground()
+        super.onResume()
+    }
+
+    private fun initSetting() {
+        if (this.accessblity) {
+            SignApplication.getInstance().setFlag(true)
+        } else {
+            Toast.makeText(this, "请打开无障碍服务", Toast.LENGTH_SHORT).show()
+//            this.cpdailySwitch.setChecked(false)
+//            this.isEnableAutoSign = false
+        }
+
+    }
+
+    private fun isOpenService() {
+        if (!IsServiceRunningUtil.isAccessibilitySettingsOn(
+                this,
+                "cn.martinkay.autocheckinplugin.service.MyAccessibilityService"
+            )
+        ) {
+            this.accessbilitySwitch.isChecked = false
+            this.accessblity = false
+            return
+        }
+        this.accessbilitySwitch.isChecked = true
+        this.accessblity = true
+    }
+
+
+    private fun isCanBackground() {
+        if (BackgroundAccess.canBackgroundStart(this)) {
+            this.canBackgroundSwitch.isChecked = true
+            return
+        }
+        this.canBackgroundSwitch.isChecked = false
+        Toast.makeText(this, "请打开后台弹出界面权限", Toast.LENGTH_SHORT).show()
+    }
+
+
     private fun initViews() {
+        mEnableAutoSignSwitch = findViewById(R.id.enable_auto_sign)
         // 早上上班 时间范围
         morningWorkStartTimeTv = findViewById(R.id.morning_work_start_time_tv)
         morningWorkStopTimeTv = findViewById(R.id.morning_work_stop_time_tv)
@@ -121,6 +183,13 @@ class MainActivity : AppCompatActivity() {
 
         val afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
         val afternoonOffWorkOffStopTimeStr = getAfternoonOffWorkStopTimeStr()
+
+        // 早上上班打卡
+        isEnableAutoSign = SharePrefHelper.getBoolean(IS_ENABLE_AUTO_SIGN, false)
+        mEnableAutoSignSwitch.isChecked = isEnableAutoSign
+
+        accessbilitySwitch = findViewById(R.id.accessbility_switch)
+        canBackgroundSwitch = findViewById(R.id.can_background_switch)
 
 
         // 早上上班打卡
@@ -184,6 +253,96 @@ class MainActivity : AppCompatActivity() {
 
         val cbCheckChange = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             when (buttonView.id) {
+                R.id.accessbility_switch -> {
+                    if (buttonView.isPressed) {
+                        if (this.accessblity) {
+                            gotoAccessibilityAct()
+                        } else {
+                            gotoAccessibilityAct()
+                        }
+                    }
+                }
+
+                R.id.can_background_switch -> {
+                    if (buttonView.isPressed) {
+                        JumpPermissionManagement.GoToSetting(this)
+                    }
+                }
+
+                // 开启自动签到
+                R.id.enable_auto_sign -> {
+                    isEnableAutoSign = isChecked;
+                    SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isChecked)
+                    if (isChecked) {
+                        if (this.accessblity) {
+                            SignApplication.getInstance().setFlag(true)
+                            // 早上上班打卡
+                            // morningStartWorkStartTimeStr分割为小时和分钟
+                            val morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
+                            val morningStartWorkStartTimeStrArr =
+                                morningStartWorkStartTimeStr.split(":")
+                            AlarManagerUtil.timedTackMonWork(
+                                this,
+                                Integer.valueOf(morningStartWorkStartTimeStrArr[0]),
+                                Integer.valueOf(morningStartWorkStartTimeStrArr[1]),
+                                0
+                            )
+
+                            // 早上下班打卡
+                            val morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
+                            val morningOffWorkStartTimeStrArr =
+                                morningOffWorkStartTimeStr.split(":")
+                            AlarManagerUtil.timedTackMonOffWork(
+                                this,
+                                Integer.valueOf(morningOffWorkStartTimeStrArr[0]),
+                                Integer.valueOf(morningOffWorkStartTimeStrArr[1]),
+                                1
+                            )
+
+                            // 下午上班打卡
+                            val afternoonStartWorkOffStartTimeStr =
+                                getAfternoonStartWorkStartTimeStr()
+                            val afternoonStartWorkOffStartTimeStrArr =
+                                afternoonStartWorkOffStartTimeStr.split(":")
+                            AlarManagerUtil.timedTackAfWork(
+                                this,
+                                Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[0]),
+                                Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[1]),
+                                2
+                            )
+
+                            // 下午下班打卡
+                            val afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
+                            val afternoonOffWorkOffStartTimeStrArr =
+                                afternoonOffWorkOffStartTimeStr.split(":")
+                            AlarManagerUtil.timedTackAfOffWork(
+                                this,
+                                Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[0]),
+                                Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[1]),
+                                3
+                            )
+
+                            Toast.makeText(
+                                this,
+                                "已开启自动打卡",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            // 未开启辅助功能
+                            Toast.makeText(
+                                this,
+                                "请开启辅助功能",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            this.mEnableAutoSignSwitch.isChecked = false
+                            this.isEnableAutoSign = false
+                        }
+                    } else {
+                        AlarManagerUtil.cancelTimetacker(this, true)
+                        SignApplication.getInstance().setFlag(false)
+                    }
+                }
+
                 R.id.morning_start_work_cb -> {
                     SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
                 }
@@ -217,13 +376,14 @@ class MainActivity : AppCompatActivity() {
         mAfternoonOffWorkSwitch.setOnCheckedChangeListener(cbCheckChange)
         mWeekSaturdaySwitch.setOnCheckedChangeListener(cbCheckChange)
         mWeekSundaySwitch.setOnCheckedChangeListener(cbCheckChange)
+
+        mEnableAutoSignSwitch.setOnCheckedChangeListener(cbCheckChange)
+        accessbilitySwitch.setOnCheckedChangeListener(cbCheckChange)
+        canBackgroundSwitch.setOnCheckedChangeListener(cbCheckChange)
     }
 
     fun onClick(v: View) {
         when (v.id) {
-            R.id.open_acc -> {
-                gotoAccessibilityAct()
-            }
 
             R.id.start_sign -> {
                 startSign()
@@ -356,6 +516,7 @@ class MainActivity : AppCompatActivity() {
                             .show()
                     }
                 }
+                changeTimeAfter(view, hourOfDay, minute)
             }, hour, min, true)
         mTimePickerDialog?.let {
             it.show()
@@ -407,9 +568,24 @@ class MainActivity : AppCompatActivity() {
                             .show()
                     }
                 }
+                changeTimeAfter(view, hourOfDay, minute)
             }, hour, min, true)
         mTimePickerDialog?.let {
             it.show()
+        }
+    }
+
+    /**
+     * 修改时间之后的处理
+     */
+    private fun changeTimeAfter(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        if (isEnableAutoSign) {
+            Toast.makeText(this, "修改时间后，需要重新开启自动打卡", Toast.LENGTH_SHORT).show()
+            isEnableAutoSign = false
+            mEnableAutoSignSwitch.isChecked = false
+            SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isEnableAutoSign)
+        } else {
+
         }
     }
 

@@ -31,6 +31,7 @@ import cn.martinkay.autocheckinplugin.getAfternoonOffWorkStopTimeStr
 import cn.martinkay.autocheckinplugin.getAfternoonStartWorkStartTimeStr
 import cn.martinkay.autocheckinplugin.getAfternoonStartWorkStopTimeStr
 import cn.martinkay.autocheckinplugin.getMorningOffWorkStartTimeStr
+import cn.martinkay.autocheckinplugin.getMorningOffWorkStopTimeStr
 import cn.martinkay.autocheckinplugin.getMorningStartWorkStartTimeStr
 import cn.martinkay.autocheckinplugin.getMorningStartWorkStopTimeStr
 import java.util.*
@@ -59,7 +60,7 @@ class SignService : AccessibilityService() {
         var mCurrStep = STEP_PREPARED
 
         fun goBackMainAct() {
-            val context = SignApplication.getApp()
+            val context = SignApplication.getInstance()
             val intent = Intent(context, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
@@ -192,7 +193,7 @@ class SignService : AccessibilityService() {
         val startTimeStr = getMorningOffWorkStartTimeStr()
         var startHour = startTimeStr.split(":")[0].toInt()
         val startMinute = startTimeStr.split(":")[1].toInt()
-        val stopTimeStr = getMorningStartWorkStopTimeStr()
+        val stopTimeStr = getMorningOffWorkStopTimeStr()
         var stopHour = stopTimeStr.split(":")[0].toInt()
         val stopMinute = stopTimeStr.split(":")[1].toInt()
         if (hour < startHour || hour > stopHour) {
@@ -420,7 +421,7 @@ class SignService : AccessibilityService() {
                         } else {
                             Log.e(TAG, "没找到打卡圆圈")
                         }
-                        Toast.makeText(SignApplication.getApp(), "打卡成功!!!", Toast.LENGTH_LONG)
+                        Toast.makeText(SignApplication.getInstance(), "打卡成功!!!", Toast.LENGTH_LONG)
                             .show()
                         if (!mManualSign) {
                             if (mIsStartWorkJob) {

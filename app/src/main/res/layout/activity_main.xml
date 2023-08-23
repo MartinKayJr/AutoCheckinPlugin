@@ -30,24 +30,26 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:orientation="vertical">
-
-                    <TextView
+                    <CheckBox
+                        android:id="@+id/accessbility_switch"
+                        android:text="开启无障碍辅助功能"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="操作步骤：\n1.点击'打开辅助功能'按钮\n2.点击'打卡助手'\n3.打开服务开关"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16sp" />
+                        android:layout_height="match_parent"
+                        />
 
-                    <Button
-                        android:id="@+id/open_acc"
+                    <CheckBox
+                        android:id="@+id/can_background_switch"
+                        android:text="后台弹出应用权限"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:background="@color/colorPrimary"
-                        android:onClick="onClick"
-                        android:text="打开辅助功能"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
+                        android:layout_height="match_parent"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/enable_auto_sign"
+                        android:text="开启自动打卡"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -108,6 +110,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
+                            android:textColor="@color/teal_200"
                             android:text="08:50"
                             android:textSize="20sp" />
 
@@ -158,6 +161,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
+                            android:textColor="@color/teal_200"
                             android:text="12:00"
                             android:textSize="20sp" />
 
@@ -208,6 +212,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
+                            android:textColor="@color/teal_200"
                             android:text="12:50"
                             android:textSize="20sp" />
 
@@ -259,6 +264,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
+                            android:textColor="@color/teal_200"
                             android:text="18:00"
                             android:textSize="20sp" />
 
