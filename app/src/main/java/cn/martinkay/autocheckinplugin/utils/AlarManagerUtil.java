@@ -34,7 +34,12 @@ public class AlarManagerUtil {
         bundle.putInt("requestCode", requestCode);
         intent.putExtra("timer", bundle);
         intent.setPackage(activity.getPackageName());
-        PendingIntent broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent broadcast;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+        } else {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         pendingIntentMonWork = broadcast;
         alarmManager.cancel(broadcast);
         long timeInMillis = calendar.getTimeInMillis();
@@ -70,7 +75,12 @@ public class AlarManagerUtil {
         bundle.putInt("requestCode", requestCode);
         intent.putExtra("timer", bundle);
         intent.setPackage(activity.getPackageName());
-        PendingIntent broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent broadcast;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+        } else {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         pendingIntentMonOffWork = broadcast;
         alarmManager.cancel(broadcast);
         long timeInMillis = calendar.getTimeInMillis();
@@ -100,7 +110,12 @@ public class AlarManagerUtil {
         bundle.putInt("requestCode", requestCode);
         intent.putExtra("timer", bundle);
         intent.setPackage(activity.getPackageName());
-        PendingIntent broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent broadcast;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+        } else {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         pendingIntentAfWork = broadcast;
         alarmManager.cancel(broadcast);
         long timeInMillis = calendar.getTimeInMillis();
@@ -130,7 +145,12 @@ public class AlarManagerUtil {
         bundle.putInt("requestCode", requestCode);
         intent.putExtra("timer", bundle);
         intent.setPackage(activity.getPackageName());
-        PendingIntent broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent broadcast;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+        } else {
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         pendingIntentAfOffWork = broadcast;
         alarmManager.cancel(broadcast);
         long timeInMillis = calendar.getTimeInMillis();

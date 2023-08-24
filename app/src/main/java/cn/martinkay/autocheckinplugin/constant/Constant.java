@@ -7,7 +7,7 @@ public class Constant {
 
     public static ActiveAppinfo activeAppinfo = null;
 
-    public static String active_app = "com.tencent.wework";
+    public static String active_app = "weixin";
     public static String package_name_weixin = "com.tencent.wework";
     public static String className_weixin = "com.tencent.wework.launch.LaunchSplashActivity";
 

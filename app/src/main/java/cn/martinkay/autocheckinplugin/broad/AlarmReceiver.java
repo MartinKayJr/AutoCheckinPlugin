@@ -36,11 +36,17 @@ public class AlarmReceiver extends BroadcastReceiver {
             context.startActivity(intent3);
             Log.i("ContentValues", "启动打卡程序");
             if (requestCode == 0) {
-                Log.i("ContentValues", "重新注册闹钟0");
+                Log.i("ContentValues", "重新注册上午上班打卡闹钟");
                 AlarManagerUtil.timedTackMonWork(context, hour, minute, requestCode);
-            } else {
-                Log.i("ContentValues", "重新注册闹钟1");
+            } else if (requestCode == 1){
+                Log.i("ContentValues", "重新注册上午下班打卡闹钟");
                 AlarManagerUtil.timedTackAfWork(context, hour, minute, requestCode);
+            } else if (requestCode == 2){
+                Log.i("ContentValues", "重新注册下午上班打卡闹钟");
+                AlarManagerUtil.timedTackMonOffWork(context, hour, minute, requestCode);
+            } else if (requestCode == 3){
+                Log.i("ContentValues", "重新注册下午下班打卡闹钟");
+                AlarManagerUtil.timedTackAfOffWork(context, hour, minute, requestCode);
             }
             Intent launchIntentForPackage = context.getPackageManager().getLaunchIntentForPackage(Constant.getActiveApp().getPackageName());
             if (launchIntentForPackage != null) {
