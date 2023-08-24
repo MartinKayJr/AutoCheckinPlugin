@@ -22,10 +22,13 @@ public class WeixinHandler implements BaseHandler {
         if (nodeById != null) {
             AccessibilityHelper.clickButtonByNode(myAccessibilityService, nodeById);
         } else if (this.messagePageProcessor.canParse(event, myAccessibilityService)) {
+            // 首页
             this.messagePageProcessor.processPage(event, myAccessibilityService);
         } else if (this.workPageProcessor.canParse(event, myAccessibilityService)) {
+            // 控制台
             this.workPageProcessor.processPage(event, myAccessibilityService);
         } else if (this.siginInProcessor.canParse(event, myAccessibilityService)) {
+            // 打卡页
             this.siginInProcessor.processPage(event, myAccessibilityService);
         }
     }

@@ -12,14 +12,23 @@ import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
 public class SiginInProcessor extends BasePageProcessor {
     private final String TAG = "Weixin-SigninPageProcessor";
 
-    @Override // com.ycy.accessibilityservicetest.handler.pageprocessor.BasePageProcessor
+    @Override
     public void processPage(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
         try {
             Thread.sleep(2500L);
             if (findNodesByText(myAccessibilityService, "你已在打卡范围内") != null) {
-                AccessibilityNodeInfo nodeById = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/bea", 0);
-                if (nodeById != null) {
-                    AccessibilityHelper.clickButtonByNode(myAccessibilityService, nodeById);
+                AccessibilityNodeInfo workSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "上班打卡", 0);
+                AccessibilityNodeInfo offWorkSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "下班打卡", 0);
+
+                if (workSign != null) {
+                    AccessibilityHelper.clickButtonByNode(myAccessibilityService, workSign);
+                    Thread.sleep(3000L);
+                    Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
+                    myAccessibilityService.clickHomeKey();
+                }
+
+                if (offWorkSign != null) {
+                    AccessibilityHelper.clickButtonByNode(myAccessibilityService, offWorkSign);
                     Thread.sleep(3000L);
                     Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                     myAccessibilityService.clickHomeKey();
@@ -36,9 +45,8 @@ public class SiginInProcessor extends BasePageProcessor {
         }
     }
 
-    @Override // com.ycy.accessibilityservicetest.handler.pageprocessor.BasePageProcessor
+    @Override
     public boolean canParse(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
-        AccessibilityNodeInfo nodeById = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/kk7", 0);
-        return (nodeById == null || nodeById.getText() == null || !"打卡".equals(nodeById.getText().toString())) ? false : true;
+        return AccessibilityHelper.getNodeByText(myAccessibilityService, "打卡", 0) != null;
     }
 }

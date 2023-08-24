@@ -114,23 +114,6 @@
                             android:text="08:50"
                             android:textSize="20sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="--"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/morning_work_stop_time_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:onClick="onClick"
-                            android:text="09:04"
-                            android:textSize="20sp" />
                     </LinearLayout>
 
 
@@ -165,23 +148,6 @@
                             android:text="12:00"
                             android:textSize="20sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="--"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/morning_offwork_stop_time_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:onClick="onClick"
-                            android:text="12:10"
-                            android:textSize="20sp" />
                     </LinearLayout>
 
 
@@ -214,24 +180,6 @@
                             android:onClick="onClick"
                             android:textColor="@color/teal_200"
                             android:text="12:50"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="--"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/afternoon_work_stop_time_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:onClick="onClick"
-                            android:text="13:25"
                             android:textSize="20sp" />
                     </LinearLayout>
 
@@ -268,23 +216,6 @@
                             android:text="18:00"
                             android:textSize="20sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="--"
-                            android:textSize="20sp" />
-
-                        <TextView
-                            android:id="@+id/afternoon_offwork_stop_time_tv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:onClick="onClick"
-                            android:text="18:10"
-                            android:textSize="20sp" />
                     </LinearLayout>
 
 

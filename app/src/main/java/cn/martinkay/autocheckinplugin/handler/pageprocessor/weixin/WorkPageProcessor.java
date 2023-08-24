@@ -10,6 +10,9 @@ import cn.martinkay.autocheckinplugin.handler.pageprocessor.BasePageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
 import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
 
+/**
+ * 在控制台页面中，需要向下滑动直到找到打卡按钮，然后点击
+ */
 public class WorkPageProcessor extends BasePageProcessor {
     @Override
     public void processPage(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
@@ -32,7 +35,6 @@ public class WorkPageProcessor extends BasePageProcessor {
 
     @Override
     public boolean canParse(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
-        AccessibilityNodeInfo nodeById = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/kke", 0);
-        return nodeById != null && nodeById.getText() != null && "工作台".equals(nodeById.getText().toString());
+        return AccessibilityHelper.getNodeByText(myAccessibilityService, "工作台", 0) != null;
     }
 }

@@ -76,20 +76,9 @@ fun getMorningStartWorkStartTimeStr(): String {
     return SharePrefHelper.getString(SIGN_TASK_MORNING_START_WORK_START_TIME, "8:50")
 }
 
-// 获取 早上上班的结束时间范围
-fun getMorningStartWorkStopTimeStr(): String {
-    return SharePrefHelper.getString(SIGN_TASK_MORNING_START_WORK_STOP_TIME, "9:04")
-}
-
-
 // 获取 早上下班的开始时间范围
 fun getMorningOffWorkStartTimeStr(): String {
     return SharePrefHelper.getString(SIGN_TASK_MORNING_OFF_WORK_START_TIME, "12:00")
-}
-
-// 获取 早上下班的结束时间范围
-fun getMorningOffWorkStopTimeStr(): String {
-    return SharePrefHelper.getString(SIGN_TASK_MORNING_OFF_WORK_STOP_TIME, "12:10")
 }
 
 /**
@@ -100,23 +89,8 @@ fun getAfternoonStartWorkStartTimeStr(): String {
 }
 
 /**
- * 获取 下午下班的结束时间范围
- */
-fun getAfternoonStartWorkStopTimeStr(): String {
-    return SharePrefHelper.getString(SIGN_TASK_AFTERNOON_START_WORK_STOP_TIME, "13:25")
-}
-
-
-/**
  * 获取 下午下班的开始时间范围
  */
 fun getAfternoonOffWorkStartTimeStr(): String {
     return SharePrefHelper.getString(SIGN_TASK_AFTERNOON_OFF_WORK_START_TIME, "18:00")
-}
-
-/**
- * 获取 下午下班的结束时间范围
- */
-fun getAfternoonOffWorkStopTimeStr(): String {
-    return SharePrefHelper.getString(SIGN_TASK_AFTERNOON_OFF_WORK_STOP_TIME, "18:10")
 }

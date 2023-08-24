@@ -6,6 +6,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
+
 import java.util.List;
 import java.util.Random;
 
@@ -97,6 +98,17 @@ public class AccessibilityHelper {
             return null;
         }
         return index > findAccessibilityNodeInfosByText.size() ? findAccessibilityNodeInfosByText.get(findAccessibilityNodeInfosByText.size()) : findAccessibilityNodeInfosByText.get(index);
+    }
+
+    public static AccessibilityNodeInfo findSpecialView(AccessibilityNodeInfo nodeInfo, String text) {
+        List<AccessibilityNodeInfo> views = nodeInfo.findAccessibilityNodeInfosByText(text);
+        if (views == null || views.isEmpty()) {
+            views = nodeInfo.findAccessibilityNodeInfosByViewId(text);
+        }
+        if (views != null && !views.isEmpty()) {
+            return views.get(0);
+        }
+        return null;
     }
 
     public static void dispatchGestrue(Path path, MyAccessibilityService myAccessibilityService) {

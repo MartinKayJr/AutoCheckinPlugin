@@ -13,7 +13,6 @@ import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
-import cn.martinkay.autocheckinplugin.service.SignService
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
 import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
@@ -35,17 +34,11 @@ class MainActivity : AppCompatActivity() {
     // 早上上班开始时间
     private lateinit var morningWorkStartTimeTv: TextView
 
-    // 早上上班结束时间
-    private lateinit var morningWorkStopTimeTv: TextView
-
     /**
      * 范围
      */
     // 早上下班开始时间
     private lateinit var morningOffWorkStartTimeTv: TextView
-
-    // 早上下班结束时间
-    private lateinit var morningOffWorkStopTimeTv: TextView
 
     /**
      * 范围
@@ -53,16 +46,12 @@ class MainActivity : AppCompatActivity() {
     // 下午上班开始时间
     private lateinit var afternoonWorkStartTimeTv: TextView
 
-    // 下午上班借宿时间
-    private lateinit var afternoonWorkStopTimeTv: TextView
-
 
     /**
      * 范围
      */
     // 下午下班结束时间
     private lateinit var afternoonOffWorkStartTimeTv: TextView
-    private lateinit var afternoonOffWorkStopTimeTv: TextView
 
 
     private lateinit var mMorningStartWorkSwitch: CheckBox
@@ -89,10 +78,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initViews()
-        initSetting()
 
         isOpenService()
         isCanBackground()
+        initSetting()
     }
 
     override fun onResume() {
@@ -141,16 +130,12 @@ class MainActivity : AppCompatActivity() {
         mEnableAutoSignSwitch = findViewById(R.id.enable_auto_sign)
         // 早上上班 时间范围
         morningWorkStartTimeTv = findViewById(R.id.morning_work_start_time_tv)
-        morningWorkStopTimeTv = findViewById(R.id.morning_work_stop_time_tv)
         // 早上下班 时间范围
         morningOffWorkStartTimeTv = findViewById(R.id.morning_offwork_start_time_tv)
-        morningOffWorkStopTimeTv = findViewById(R.id.morning_offwork_stop_time_tv)
         // 下午上班 时间范围
         afternoonWorkStartTimeTv = findViewById(R.id.afternoon_work_start_time_tv)
-        afternoonWorkStopTimeTv = findViewById(R.id.afternoon_work_stop_time_tv)
         // 下午下班 时间范围
         afternoonOffWorkStartTimeTv = findViewById(R.id.afternoon_offwork_start_time_tv)
-        afternoonOffWorkStopTimeTv = findViewById(R.id.afternoon_offwork_stop_time_tv)
 
         // 早上开始上班 switch
         mMorningStartWorkSwitch = findViewById(R.id.morning_start_work_cb)
@@ -172,17 +157,13 @@ class MainActivity : AppCompatActivity() {
         mAfternoonEndCheckinSatus = findViewById(R.id.afternoon_end_checkin_status)
 
         val morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
-        val morningStartWorkStopTimeStr = getMorningStartWorkStopTimeStr()
 
         val morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
-        val morningOffWorkStopTimeStr = getMorningOffWorkStopTimeStr()
 
 
         val afternoonStartWorkOffStartTimeStr = getAfternoonStartWorkStartTimeStr()
-        val afternoonStartWorkOffStopTimeStr = getAfternoonStartWorkStopTimeStr()
 
         val afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
-        val afternoonOffWorkOffStopTimeStr = getAfternoonOffWorkStopTimeStr()
 
         // 早上上班打卡
         isEnableAutoSign = SharePrefHelper.getBoolean(IS_ENABLE_AUTO_SIGN, false)
@@ -211,14 +192,10 @@ class MainActivity : AppCompatActivity() {
 
 
         morningWorkStartTimeTv.text = formatTime(morningStartWorkStartTimeStr)
-        morningWorkStopTimeTv.text = formatTime(morningStartWorkStopTimeStr)
         morningOffWorkStartTimeTv.text = formatTime(morningOffWorkStartTimeStr)
-        morningOffWorkStopTimeTv.text = formatTime(morningOffWorkStopTimeStr)
 
         afternoonWorkStartTimeTv.text = formatTime(afternoonStartWorkOffStartTimeStr)
-        afternoonWorkStopTimeTv.text = formatTime(afternoonStartWorkOffStopTimeStr)
         afternoonOffWorkStartTimeTv.text = formatTime(afternoonOffWorkOffStartTimeStr)
-        afternoonOffWorkStopTimeTv.text = formatTime(afternoonOffWorkOffStopTimeStr)
 
 
         // 早上初始化
@@ -386,7 +363,6 @@ class MainActivity : AppCompatActivity() {
         when (v.id) {
 
             R.id.start_sign -> {
-                startSign()
                 gotoWeWork()
             }
 
@@ -397,25 +373,11 @@ class MainActivity : AppCompatActivity() {
                 showMorningDateTimePicker(true, true, startHour, startMinute)
             }
 
-            R.id.morning_work_stop_time_tv -> {
-                val stopTimeStr = getMorningStartWorkStopTimeStr()
-                var stopHour = stopTimeStr.split(":")[0].toInt()
-                val stopMinute = stopTimeStr.split(":")[1].toInt()
-                showMorningDateTimePicker(false, true, stopHour, stopMinute)
-            }
-
             R.id.morning_offwork_start_time_tv -> {
                 val startTimeStr = getMorningOffWorkStartTimeStr()
                 var startHour = startTimeStr.split(":")[0].toInt()
                 val startMinute = startTimeStr.split(":")[1].toInt()
                 showMorningDateTimePicker(true, true, startHour, startMinute)
-            }
-
-            R.id.morning_offwork_stop_time_tv -> {
-                val stopTimeStr = getMorningOffWorkStopTimeStr()
-                var stopHour = stopTimeStr.split(":")[0].toInt()
-                val stopMinute = stopTimeStr.split(":")[1].toInt()
-                showMorningDateTimePicker(false, true, stopHour, stopMinute)
             }
 
             R.id.afternoon_work_start_time_tv -> {
@@ -425,13 +387,6 @@ class MainActivity : AppCompatActivity() {
                 showAfternoonDateTimePicker(true, false, startHour, startMinute)
             }
 
-            R.id.afternoon_work_stop_time_tv -> {
-                val stopTimeStr = getAfternoonStartWorkStopTimeStr()
-                var stopHour = stopTimeStr.split(":")[0].toInt()
-                val stopMinute = stopTimeStr.split(":")[1].toInt()
-                showAfternoonDateTimePicker(false, false, stopHour, stopMinute)
-            }
-
             R.id.afternoon_offwork_start_time_tv -> {
                 val startTimeStr = getAfternoonOffWorkStartTimeStr()
                 var startHour = startTimeStr.split(":")[0].toInt()
@@ -439,17 +394,10 @@ class MainActivity : AppCompatActivity() {
                 showAfternoonDateTimePicker(true, false, startHour, startMinute)
             }
 
-            R.id.afternoon_offwork_stop_time_tv -> {
-                val stopTimeStr = getAfternoonOffWorkStopTimeStr()
-                var stopHour = stopTimeStr.split(":")[0].toInt()
-                val stopMinute = stopTimeStr.split(":")[1].toInt()
-                showAfternoonDateTimePicker(false, false, stopHour, stopMinute)
-            }
         }
     }
 
     private fun gotoAccessibilityAct() {
-        SignService.mStartOpen = true
         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
@@ -469,11 +417,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun startSign() {
-        val intent = Intent(this, SignService::class.java)
-        intent.action = SignService.ACTION_DO_ALARM_SIGN
-        startService(intent)
-    }
 
     private var mTimePickerDialog: TimePickerDialog? = null
 
@@ -494,14 +437,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "早上上班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
                         morningWorkStartTimeTv.text = "$timeStr"
-                    } else {
-                        SharePrefHelper.putString(
-                            SIGN_TASK_MORNING_START_WORK_STOP_TIME,
-                            "$timeStr"
-                        )
-                        morningWorkStopTimeTv.text = "$timeStr"
-                        Toast.makeText(this, "早上上班打卡结束时间:$timeStr", Toast.LENGTH_SHORT)
-                            .show()
                     }
                 } else {
                     if (isStart) {
@@ -509,11 +444,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "早上下班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
                         morningOffWorkStartTimeTv.text = "$timeStr"
-                    } else {
-                        SharePrefHelper.putString(SIGN_TASK_MORNING_OFF_WORK_STOP_TIME, "$timeStr")
-                        morningOffWorkStopTimeTv.text = "$timeStr"
-                        Toast.makeText(this, "早上下班打卡结束时间:$timeStr", Toast.LENGTH_SHORT)
-                            .show()
                     }
                 }
                 changeTimeAfter(view, hourOfDay, minute)
@@ -543,14 +473,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "下午上班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
                         morningWorkStartTimeTv.text = "$timeStr"
-                    } else {
-                        SharePrefHelper.putString(
-                            SIGN_TASK_AFTERNOON_START_WORK_STOP_TIME,
-                            "$timeStr"
-                        )
-                        morningWorkStopTimeTv.text = "$timeStr"
-                        Toast.makeText(this, "下午上班打卡结束时间:$timeStr", Toast.LENGTH_SHORT)
-                            .show()
                     }
                 } else {
                     if (isStart) {
@@ -558,14 +480,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "下午下班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
                         morningOffWorkStartTimeTv.text = "$timeStr"
-                    } else {
-                        SharePrefHelper.putString(
-                            SIGN_TASK_AFTERNOON_OFF_WORK_STOP_TIME,
-                            "$timeStr"
-                        )
-                        morningOffWorkStopTimeTv.text = "$timeStr"
-                        Toast.makeText(this, "下午下班打卡结束时间:$timeStr", Toast.LENGTH_SHORT)
-                            .show()
                     }
                 }
                 changeTimeAfter(view, hourOfDay, minute)
