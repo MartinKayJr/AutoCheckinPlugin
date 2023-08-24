@@ -2,6 +2,7 @@ package cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin;
 
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.BasePageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
@@ -19,6 +20,9 @@ public class MessagePageProcessor extends BasePageProcessor {
 
     @Override
     public boolean canParse(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
-        return AccessibilityHelper.getNodeByText(myAccessibilityService, "工作台", 0) != null;
+        // 顶部的文字
+        AccessibilityNodeInfo topTextView = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/lkw", 0);
+        boolean isMessagePage = topTextView.getText().toString().contains("消息");
+        return isMessagePage;
     }
 }
