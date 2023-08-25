@@ -37,7 +37,10 @@ public class WorkPageProcessor extends BasePageProcessor {
     public boolean canParse(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
         // 顶部的文字
         AccessibilityNodeInfo topTextView = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/lkw", 0);
-        boolean isMessagePage = topTextView.getText().toString().contains("工作台");
-        return isMessagePage;
+        if (topTextView!=null) {
+            return topTextView.getText().toString().contains("工作台");
+        }else {
+            return false;
+        }
     }
 }
