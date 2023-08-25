@@ -20,6 +20,7 @@ public class SiginInProcessor extends BasePageProcessor {
                 if (AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/bov", 0).toString().contains("后打卡")) {
                     Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
                     myAccessibilityService.autoLock();
                     return;
                 }
@@ -31,6 +32,7 @@ public class SiginInProcessor extends BasePageProcessor {
                     Thread.sleep(3000L);
                     Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
                     myAccessibilityService.autoLock();
                 }
 
@@ -39,6 +41,7 @@ public class SiginInProcessor extends BasePageProcessor {
                     Thread.sleep(3000L);
                     Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
                     myAccessibilityService.autoLock();
                 }
             } else {
@@ -48,6 +51,7 @@ public class SiginInProcessor extends BasePageProcessor {
             if (findNodesByText(myAccessibilityService, "今日打卡已完成") != null) {
                 Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                 myAccessibilityService.clickHomeKey();
+                myAccessibilityService.closeApp("com.tencent.wework");
                 myAccessibilityService.autoLock();
             }
         } catch (Exception unused) {

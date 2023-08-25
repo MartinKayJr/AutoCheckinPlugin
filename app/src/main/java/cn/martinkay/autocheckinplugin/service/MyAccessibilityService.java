@@ -87,6 +87,19 @@ public class MyAccessibilityService extends AccessibilityService {
         return arrayList;
     }
 
+    public Boolean closeApp(String packageName) {
+        if (Constant.isRoot) {
+            try {
+                if (Shell.su("am force-stop " + packageName).exec().isSuccess()) {
+                    Log.i("MyAccessibilityService", "息屏成功");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     public Boolean clickHomeKey() {
         return Boolean.valueOf(performGlobalAction(2));
     }
