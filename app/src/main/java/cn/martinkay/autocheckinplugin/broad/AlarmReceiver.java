@@ -8,14 +8,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
+
+import com.topjohnwu.superuser.Shell;
+
 import java.util.Random;
 
 import cn.martinkay.autocheckinplugin.MainActivity;
 import cn.martinkay.autocheckinplugin.constant.Constant;
+import cn.martinkay.autocheckinplugin.util.AndroidRootUtils;
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil;
 
 public class AlarmReceiver extends BroadcastReceiver {
     Random random = new Random();
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("ContentValues", "接收闹钟事件");
@@ -39,13 +44,13 @@ public class AlarmReceiver extends BroadcastReceiver {
             if (requestCode == 0) {
                 Log.i("ContentValues", "重新注册上午上班打卡闹钟");
                 AlarManagerUtil.timedTackMonWork(context, hour, minute, requestCode);
-            } else if (requestCode == 1){
+            } else if (requestCode == 1) {
                 Log.i("ContentValues", "重新注册上午下班打卡闹钟");
                 AlarManagerUtil.timedTackAfWork(context, hour, minute, requestCode);
-            } else if (requestCode == 2){
+            } else if (requestCode == 2) {
                 Log.i("ContentValues", "重新注册下午上班打卡闹钟");
                 AlarManagerUtil.timedTackMonOffWork(context, hour, minute, requestCode);
-            } else if (requestCode == 3){
+            } else if (requestCode == 3) {
                 Log.i("ContentValues", "重新注册下午下班打卡闹钟");
                 AlarManagerUtil.timedTackAfOffWork(context, hour, minute, requestCode);
             }
@@ -62,9 +67,21 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public static void wakeUpAndUnlock(Context context) {
-        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "autocheckinplugin:WakeLockTag");
-        wakeLock.acquire();
-        ((KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE)).newKeyguardLock("unLock").disableKeyguard();
+        if (Constant.isRoot) {
+            if (Constant.isRoot) {
+                try {
+                    if (Shell.su("input keyevent 26").exec().isSuccess()) {
+                        Log.i("MyAccessibilityService", "息屏成功");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "autocheckinplugin:WakeLockTag");
+            wakeLock.acquire();
+            ((KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE)).newKeyguardLock("unLock").disableKeyguard();
+        }
     }
 }

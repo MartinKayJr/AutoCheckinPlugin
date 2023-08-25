@@ -23,6 +23,9 @@ fastjson = { module = "com.alibaba:fastjson", version = "1.1.72.android" }
 apache-commons = { module = "org.apache.commons:commons-lang3", version = "3.7" }
 gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 
+libsu-core = { module = "com.github.topjohnwu.libsu:core", version = "3.0.1" }
+libsu-io = { module = "com.github.topjohnwu.libsu:io", version = "3.0.1" }
+
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }

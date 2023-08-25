@@ -1,7 +1,6 @@
 package cn.martinkay.autocheckinplugin
 
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -12,7 +11,9 @@ import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import cn.martinkay.autocheckinplugin.constant.Constant
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
+import cn.martinkay.autocheckinplugin.util.ShellUtils
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
 import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
@@ -73,6 +74,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var accessbilitySwitch: CheckBox
     private lateinit var canBackgroundSwitch: CheckBox
+
+    private lateinit var enableRootSwitch: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,6 +175,8 @@ class MainActivity : AppCompatActivity() {
         accessbilitySwitch = findViewById(R.id.accessbility_switch)
         canBackgroundSwitch = findViewById(R.id.can_background_switch)
 
+        enableRootSwitch = findViewById(R.id.enable_root_switch)
+
 
         // 早上上班打卡
         val isMorningStartOpen =
@@ -230,6 +235,26 @@ class MainActivity : AppCompatActivity() {
 
         val cbCheckChange = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             when (buttonView.id) {
+
+                // 开启ROOT
+                R.id.enable_root_switch -> {
+                    if (buttonView.isPressed) {
+                        val cmds = ArrayList<String>()
+                        cmds.add("ls /data/data")
+                        val result: ShellUtils.CommandResult =
+                            ShellUtils.execCommand(cmds, true, true)
+                        if (result.result == 0) {
+                            Constant.isRoot = true
+                            enableRootSwitch.isChecked = true
+                            Toast.makeText(this, "ROOT权限已开启", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Constant.isRoot = false
+                            enableRootSwitch.isChecked = false
+                            Toast.makeText(this, "ROOT权限未开启", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
                 R.id.accessbility_switch -> {
                     if (buttonView.isPressed) {
                         if (this.accessblity) {
@@ -357,6 +382,8 @@ class MainActivity : AppCompatActivity() {
         mEnableAutoSignSwitch.setOnCheckedChangeListener(cbCheckChange)
         accessbilitySwitch.setOnCheckedChangeListener(cbCheckChange)
         canBackgroundSwitch.setOnCheckedChangeListener(cbCheckChange)
+
+        enableRootSwitch.setOnCheckedChangeListener(cbCheckChange)
     }
 
     fun onClick(v: View) {

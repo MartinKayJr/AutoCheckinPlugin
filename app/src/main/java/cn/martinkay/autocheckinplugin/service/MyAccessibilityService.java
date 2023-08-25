@@ -5,11 +5,15 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
+
+import com.topjohnwu.superuser.Shell;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import cn.martinkay.autocheckinplugin.SignApplication;
+import cn.martinkay.autocheckinplugin.constant.Constant;
 import cn.martinkay.autocheckinplugin.handler.BaseHandler;
 import cn.martinkay.autocheckinplugin.handler.WeixinHandler;
 
@@ -85,6 +89,24 @@ public class MyAccessibilityService extends AccessibilityService {
 
     public Boolean clickHomeKey() {
         return Boolean.valueOf(performGlobalAction(2));
+    }
+
+    /**
+     * 自动息屏
+     *
+     * @return
+     */
+    public Boolean autoLock() {
+        if (Constant.isRoot) {
+            try {
+                if (Shell.su("input keyevent 26").exec().isSuccess()) {
+                    Log.i("MyAccessibilityService", "息屏成功");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     @Override

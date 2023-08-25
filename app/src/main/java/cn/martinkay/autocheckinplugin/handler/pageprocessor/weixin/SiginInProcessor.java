@@ -8,7 +8,6 @@ import cn.martinkay.autocheckinplugin.handler.pageprocessor.BasePageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
 import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
 
-/* loaded from: classes.dex */
 public class SiginInProcessor extends BasePageProcessor {
     private final String TAG = "Weixin-SigninPageProcessor";
 
@@ -21,6 +20,7 @@ public class SiginInProcessor extends BasePageProcessor {
                 if (AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/bov", 0).toString().contains("后打卡")) {
                     Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.autoLock();
                     return;
                 }
                 AccessibilityNodeInfo workSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "上班打卡", 0);
@@ -31,6 +31,7 @@ public class SiginInProcessor extends BasePageProcessor {
                     Thread.sleep(3000L);
                     Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.autoLock();
                 }
 
                 if (offWorkSign != null) {
@@ -38,6 +39,7 @@ public class SiginInProcessor extends BasePageProcessor {
                     Thread.sleep(3000L);
                     Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                     myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.autoLock();
                 }
             } else {
                 AccessibilityHelper.moveToUp(myAccessibilityService);
@@ -46,6 +48,7 @@ public class SiginInProcessor extends BasePageProcessor {
             if (findNodesByText(myAccessibilityService, "今日打卡已完成") != null) {
                 Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
                 myAccessibilityService.clickHomeKey();
+                myAccessibilityService.autoLock();
             }
         } catch (Exception unused) {
             Log.i("Weixin", "工作台打卡失败");

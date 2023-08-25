@@ -8,6 +8,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -30,26 +31,30 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:orientation="vertical">
+
                     <CheckBox
-                        android:id="@+id/accessbility_switch"
-                        android:text="开启无障碍辅助功能"
+                        android:id="@+id/enable_root_switch"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        />
+                        android:text="开启ROOT(吊炸天)" />
+
+                    <CheckBox
+                        android:id="@+id/accessbility_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="开启无障碍辅助功能" />
 
                     <CheckBox
                         android:id="@+id/can_background_switch"
-                        android:text="后台弹出应用权限"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        />
+                        android:text="后台弹出应用权限" />
 
                     <CheckBox
                         android:id="@+id/enable_auto_sign"
-                        android:text="开启自动打卡"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        />
+                        android:text="开启自动打卡" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -110,8 +115,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
-                            android:textColor="@color/teal_200"
                             android:text="08:50"
+                            android:textColor="@color/teal_200"
                             android:textSize="20sp" />
 
                     </LinearLayout>
@@ -144,8 +149,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
-                            android:textColor="@color/teal_200"
                             android:text="12:00"
+                            android:textColor="@color/teal_200"
                             android:textSize="20sp" />
 
                     </LinearLayout>
@@ -178,8 +183,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
-                            android:textColor="@color/teal_200"
                             android:text="12:50"
+                            android:textColor="@color/teal_200"
                             android:textSize="20sp" />
                     </LinearLayout>
 
@@ -212,8 +217,8 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:onClick="onClick"
-                            android:textColor="@color/teal_200"
                             android:text="18:00"
+                            android:textColor="@color/teal_200"
                             android:textSize="20sp" />
 
                     </LinearLayout>
@@ -378,7 +383,6 @@
                             android:checked="true" />
 
                     </LinearLayout>
-
 
 
                 </LinearLayout>

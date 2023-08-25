@@ -11,7 +11,7 @@ public class Constant {
     public static String package_name_weixin = "com.tencent.wework";
     public static String className_weixin = "com.tencent.wework.launch.LaunchSplashActivity";
 
-
+    public static boolean isRoot = false;
 
     public static ActiveAppinfo getActiveApp() {
         if (activeAppinfo == null) {
