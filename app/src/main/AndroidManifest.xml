@@ -36,6 +36,10 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".service.AssistService"
+            android:priority="1000" />
+
 
         <receiver android:name=".broad.AlarmReceiver" android:enabled="true" android:exported="true">
             <intent-filter>

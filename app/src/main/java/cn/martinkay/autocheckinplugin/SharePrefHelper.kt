@@ -16,22 +16,12 @@ const val IS_OPEN_SATURDAY_SIGN_TASK = "is_open_saturday_sign_task"
 const val IS_OPEN_SUNDAY_SIGN_TASK = "is_open_sunday_sign_task"
 
 const val SIGN_TASK_MORNING_START_WORK_START_TIME = "sign_task_morning_start_work_start_time"
-const val SIGN_TASK_MORNING_START_WORK_STOP_TIME = "sign_task_morning_start_work_stop_time"
 
 const val SIGN_TASK_MORNING_OFF_WORK_START_TIME = "sign_task_morning_off_work_start_time"
-const val SIGN_TASK_MORNING_OFF_WORK_STOP_TIME = "sign_task_morning_off_work_stop_time"
 
 const val SIGN_TASK_AFTERNOON_START_WORK_START_TIME = "sign_task_start_work_start_time"
-const val SIGN_TASK_AFTERNOON_START_WORK_STOP_TIME = "sign_task_start_work_stop_time"
 
 const val SIGN_TASK_AFTERNOON_OFF_WORK_START_TIME = "sign_task_stop_work_start_time"
-const val SIGN_TASK_AFTERNOON_OFF_WORK_STOP_TIME = "sign_task_stop_work_stop_time"
-
-const val IS_FINISH_MORNING_START_WORK_SIGN_TASK = "is_finish_morning_start_work_sign_task"
-const val IS_FINISH_MORNING_OFF_WORK_SIGN_TASK = "is_finish_morning_off_work_sign_task"
-const val IS_FINISH_AFTERNOON_START_WORK_SIGN_TASK = "is_finish_afternoon_start_work_sign_task"
-const val IS_FINISH_AFTERNOON_OFF_WORK_SIGN_TASK = "is_finish_afternoon_off_work_sign_task"
-
 object SharePrefHelper {
     private var mShare: SharedPreferences? = null
 

@@ -24,6 +24,27 @@ public class SiginInProcessor extends BasePageProcessor {
                     myAccessibilityService.autoLock();
                     return;
                 }
+                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "今日打卡已完成，好好休息", 0) != null) {
+                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
+                    myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
+                    myAccessibilityService.autoLock();
+                    return;
+                }
+                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "上班·正常", 0) != null) {
+                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
+                    myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
+                    myAccessibilityService.autoLock();
+                    return;
+                }
+                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "下班·正常", 0) != null) {
+                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
+                    myAccessibilityService.clickHomeKey();
+                    myAccessibilityService.closeApp("com.tencent.wework");
+                    myAccessibilityService.autoLock();
+                    return;
+                }
                 AccessibilityNodeInfo workSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "上班打卡", 0);
                 AccessibilityNodeInfo offWorkSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "下班打卡", 0);
 

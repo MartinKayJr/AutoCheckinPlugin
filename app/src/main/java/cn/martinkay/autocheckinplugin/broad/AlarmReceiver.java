@@ -15,7 +15,6 @@ import java.util.Random;
 
 import cn.martinkay.autocheckinplugin.MainActivity;
 import cn.martinkay.autocheckinplugin.constant.Constant;
-import cn.martinkay.autocheckinplugin.util.AndroidRootUtils;
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -71,7 +70,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             if (Constant.isRoot) {
                 try {
                     if (Shell.su("input keyevent 26").exec().isSuccess()) {
-                        Log.i("MyAccessibilityService", "息屏成功");
+                        Log.i("MyAccessibilityService", "亮屏成功");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

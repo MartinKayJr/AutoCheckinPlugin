@@ -17,6 +17,10 @@ import cn.martinkay.autocheckinplugin.util.ShellUtils
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
 import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
+import com.haibin.calendarview.Calendar
+import com.haibin.calendarview.CalendarView
+import com.haibin.calendarview.CalendarView.OnCalendarInterceptListener
+import com.haibin.calendarview.CalendarView.OnCalendarSelectListener
 
 
 const val PACKAGE_WECHAT_WORK = "com.tencent.wework"
@@ -61,21 +65,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAfternoonStartWorkSwitch: CheckBox
     private lateinit var mAfternoonOffWorkSwitch: CheckBox
 
-    private lateinit var mWeekSaturdaySwitch: CheckBox
-    private lateinit var mWeekSundaySwitch: CheckBox
-
-    /**
-     * 是否已经完成打卡状态
-     */
-    private lateinit var mMorningStartCheckinSatus: CheckBox
-    private lateinit var mMorningEndCheckinSatus: CheckBox
-    private lateinit var mAfternoonStartCheckinSatus: CheckBox
-    private lateinit var mAfternoonEndCheckinSatus: CheckBox
 
     private lateinit var accessbilitySwitch: CheckBox
     private lateinit var canBackgroundSwitch: CheckBox
 
     private lateinit var enableRootSwitch: CheckBox
+
+    private lateinit var calendarView: CalendarView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,16 +145,6 @@ class MainActivity : AppCompatActivity() {
         // 下午结束上班switch
         mAfternoonOffWorkSwitch = findViewById(R.id.afternoon_off_work_cb)
 
-        mWeekSaturdaySwitch = findViewById(R.id.saturday_ck)
-        mWeekSundaySwitch = findViewById(R.id.sunday_ck)
-
-
-        // 初始化状态
-        mMorningStartCheckinSatus = findViewById(R.id.morning_start_checkin_status)
-        mMorningEndCheckinSatus = findViewById(R.id.morning_end_checkin_status)
-        mAfternoonStartCheckinSatus = findViewById(R.id.afternoon_start_checkin_status)
-        mAfternoonEndCheckinSatus = findViewById(R.id.afternoon_end_checkin_status)
-
         val morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
 
         val morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
@@ -176,6 +162,8 @@ class MainActivity : AppCompatActivity() {
         canBackgroundSwitch = findViewById(R.id.can_background_switch)
 
         enableRootSwitch = findViewById(R.id.enable_root_switch)
+
+        calendarView = findViewById(R.id.calendarView)
 
 
         // 早上上班打卡
@@ -211,27 +199,6 @@ class MainActivity : AppCompatActivity() {
         mAfternoonStartWorkSwitch.isChecked = isAfternoonStartOpen
         mAfternoonOffWorkSwitch.isChecked = isAfternoonOffOpen
 
-
-        mWeekSaturdaySwitch.isChecked = isWeekSaturdayOpen
-        mWeekSundaySwitch.isChecked = isWeekSundayOpen
-
-        // 初始化状态的指
-        mMorningStartCheckinSatus.isChecked = SharePrefHelper.getBoolean(
-            IS_FINISH_MORNING_START_WORK_SIGN_TASK,
-            false
-        )
-        mMorningEndCheckinSatus.isChecked = SharePrefHelper.getBoolean(
-            IS_FINISH_MORNING_OFF_WORK_SIGN_TASK,
-            false
-        )
-        mAfternoonStartCheckinSatus.isChecked = SharePrefHelper.getBoolean(
-            IS_FINISH_AFTERNOON_START_WORK_SIGN_TASK,
-            false
-        )
-        mAfternoonEndCheckinSatus.isChecked = SharePrefHelper.getBoolean(
-            IS_FINISH_AFTERNOON_OFF_WORK_SIGN_TASK,
-            false
-        )
 
         val cbCheckChange = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             when (buttonView.id) {
@@ -360,15 +327,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.afternoon_off_work_cb -> {
                     SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
                 }
-
-                R.id.saturday_ck -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_SATURDAY_SIGN_TASK, isChecked)
-                }
-
-                R.id.sunday_ck -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_SUNDAY_SIGN_TASK, isChecked)
-
-                }
             }
         }
         // 修改事件
@@ -376,14 +334,27 @@ class MainActivity : AppCompatActivity() {
         mMorningOffWorkSwitch.setOnCheckedChangeListener(cbCheckChange)
         mAfternoonStartWorkSwitch.setOnCheckedChangeListener(cbCheckChange)
         mAfternoonOffWorkSwitch.setOnCheckedChangeListener(cbCheckChange)
-        mWeekSaturdaySwitch.setOnCheckedChangeListener(cbCheckChange)
-        mWeekSundaySwitch.setOnCheckedChangeListener(cbCheckChange)
-
         mEnableAutoSignSwitch.setOnCheckedChangeListener(cbCheckChange)
         accessbilitySwitch.setOnCheckedChangeListener(cbCheckChange)
         canBackgroundSwitch.setOnCheckedChangeListener(cbCheckChange)
 
         enableRootSwitch.setOnCheckedChangeListener(cbCheckChange)
+
+        calendarView.setOnCalendarMultiSelectListener(object :
+            CalendarView.OnCalendarMultiSelectListener {
+            override fun onCalendarMultiSelectOutOfRange(calendar: Calendar?) {
+
+            }
+
+            override fun onMultiSelectOutOfSize(calendar: Calendar?, maxSize: Int) {
+
+            }
+
+            override fun onCalendarMultiSelect(calendar: Calendar?, curSize: Int, maxSize: Int) {
+                calendar?.scheme = "25"
+            }
+
+        })
     }
 
     fun onClick(v: View) {

@@ -1,5 +1,8 @@
 package cn.martinkay.autocheckinplugin.utils;
 
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_OPEN_SATURDAY_SIGN_TASK;
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_OPEN_SUNDAY_SIGN_TASK;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,6 +12,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import java.util.Calendar;
+
+import cn.martinkay.autocheckinplugin.SharePrefHelper;
 
 /* loaded from: classes.dex */
 public class AlarManagerUtil {
@@ -46,20 +51,9 @@ public class AlarManagerUtil {
         if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0) {
             timeInMillis += 86400000;
         }
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonWork);
-                    return;
-                }
-            }
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonWork);
-        } else if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonWork);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonWork);
-        }
+        configure(timeInMillis, pendingIntentMonWork);
     }
+
 
     public static void timedTackMonOffWork(Context activity, int hour, int minute, int requestCode) {
         activityA = activity;
@@ -87,13 +81,7 @@ public class AlarManagerUtil {
         if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0) {
             timeInMillis += 86400000;
         }
-        if (Build.VERSION.SDK_INT >= 23) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonOffWork);
-        } else if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonOffWork);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentMonOffWork);
-        }
+        configure(timeInMillis, pendingIntentMonOffWork);
     }
 
     public static void timedTackAfWork(Context activity, int hour, int minute, int requestCode) {
@@ -122,13 +110,7 @@ public class AlarManagerUtil {
         if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0) {
             timeInMillis += 86400000;
         }
-        if (Build.VERSION.SDK_INT >= 23) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfWork);
-        } else if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfWork);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfWork);
-        }
+        configure(timeInMillis, pendingIntentAfWork);
     }
 
     public static void timedTackAfOffWork(Context activity, int hour, int minute, int requestCode) {
@@ -157,12 +139,22 @@ public class AlarManagerUtil {
         if (calendar.getTimeInMillis() - System.currentTimeMillis() < 0) {
             timeInMillis += 86400000;
         }
+        configure(timeInMillis, pendingIntentAfOffWork);
+    }
+
+    private static void configure(long timeInMillis, PendingIntent pendingIntent) {
         if (Build.VERSION.SDK_INT >= 23) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfOffWork);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                    return;
+                }
+            }
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfOffWork);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntentAfOffWork);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         }
     }
 
