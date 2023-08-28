@@ -412,6 +412,10 @@ class MainActivity : AppCompatActivity() {
     private fun gotoWeWork() {
         val intent = packageManager.getLaunchIntentForPackage(PACKAGE_WECHAT_WORK)
         intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (intent == null) {
+            Toast.makeText(this, "请安装企业微信 或 允许获取已安装应用权限", Toast.LENGTH_SHORT).show()
+            return
+        }
         startActivity(intent)
     }
 

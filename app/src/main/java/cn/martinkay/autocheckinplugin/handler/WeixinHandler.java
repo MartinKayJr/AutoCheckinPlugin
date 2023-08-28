@@ -3,6 +3,7 @@ package cn.martinkay.autocheckinplugin.handler;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.CompleteProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.MessagePageProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.SiginInProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.WorkPageProcessor;
@@ -16,6 +17,8 @@ public class WeixinHandler implements BaseHandler {
     private MessagePageProcessor messagePageProcessor = new MessagePageProcessor();
     private SiginInProcessor siginInProcessor = new SiginInProcessor();
 
+    private CompleteProcessor completeProcessor = new CompleteProcessor();
+
     @Override
     public void doHandle(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) throws Exception {
         AccessibilityNodeInfo nodeById = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/hrb", 0);
@@ -27,6 +30,9 @@ public class WeixinHandler implements BaseHandler {
         } else if (this.workPageProcessor.canParse(event, myAccessibilityService)) {
             // 控制台
             this.workPageProcessor.processPage(event, myAccessibilityService);
+        } else if (this.completeProcessor.canParse(event, myAccessibilityService)) {
+            // 打卡完成页
+            this.completeProcessor.processPage(event, myAccessibilityService);
         } else if (this.siginInProcessor.canParse(event, myAccessibilityService)) {
             // 打卡页
             this.siginInProcessor.processPage(event, myAccessibilityService);

@@ -17,34 +17,6 @@ public class SiginInProcessor extends BasePageProcessor {
             Thread.sleep(2500L);
             if (findNodesByText(myAccessibilityService, "你已在打卡范围内") != null) {
                 // 意味着这个时间段已经打卡过了
-                if (AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/bov", 0).toString().contains("后打卡")) {
-                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
-                    myAccessibilityService.clickHomeKey();
-                    myAccessibilityService.closeApp("com.tencent.wework");
-                    myAccessibilityService.autoLock();
-                    return;
-                }
-                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "今日打卡已完成，好好休息", 0) != null) {
-                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
-                    myAccessibilityService.clickHomeKey();
-                    myAccessibilityService.closeApp("com.tencent.wework");
-                    myAccessibilityService.autoLock();
-                    return;
-                }
-                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "上班·正常", 0) != null) {
-                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
-                    myAccessibilityService.clickHomeKey();
-                    myAccessibilityService.closeApp("com.tencent.wework");
-                    myAccessibilityService.autoLock();
-                    return;
-                }
-                if (AccessibilityHelper.getNodeByText(myAccessibilityService, "下班·正常", 0) != null) {
-                    Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
-                    myAccessibilityService.clickHomeKey();
-                    myAccessibilityService.closeApp("com.tencent.wework");
-                    myAccessibilityService.autoLock();
-                    return;
-                }
                 AccessibilityNodeInfo workSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "上班打卡", 0);
                 AccessibilityNodeInfo offWorkSign = AccessibilityHelper.getNodeByText(myAccessibilityService, "下班打卡", 0);
 
