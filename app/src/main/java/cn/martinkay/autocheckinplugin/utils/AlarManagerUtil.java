@@ -1,8 +1,5 @@
 package cn.martinkay.autocheckinplugin.utils;
 
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_OPEN_SATURDAY_SIGN_TASK;
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_OPEN_SUNDAY_SIGN_TASK;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,7 +12,6 @@ import java.util.Calendar;
 
 import cn.martinkay.autocheckinplugin.SharePrefHelper;
 
-/* loaded from: classes.dex */
 public class AlarManagerUtil {
     private static Context activityA;
     public static AlarmManager alarmManager;

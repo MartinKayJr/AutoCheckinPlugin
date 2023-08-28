@@ -45,10 +45,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                 AlarManagerUtil.timedTackMonWork(context, hour, minute, requestCode);
             } else if (requestCode == 1) {
                 Log.i("ContentValues", "重新注册上午下班打卡闹钟");
-                AlarManagerUtil.timedTackAfWork(context, hour, minute, requestCode);
+                AlarManagerUtil.timedTackMonOffWork(context, hour, minute, requestCode);
             } else if (requestCode == 2) {
                 Log.i("ContentValues", "重新注册下午上班打卡闹钟");
-                AlarManagerUtil.timedTackMonOffWork(context, hour, minute, requestCode);
+                AlarManagerUtil.timedTackAfWork(context, hour, minute, requestCode);
             } else if (requestCode == 3) {
                 Log.i("ContentValues", "重新注册下午下班打卡闹钟");
                 AlarManagerUtil.timedTackAfOffWork(context, hour, minute, requestCode);
