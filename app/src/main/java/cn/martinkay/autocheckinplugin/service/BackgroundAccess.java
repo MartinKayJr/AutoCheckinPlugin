@@ -10,7 +10,7 @@ import android.util.Log;
 public class BackgroundAccess {
     public static boolean canBackgroundStart(Context context) {
         try {
-            return ((AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE)).checkOp("android:system_alert_window", Process.myUid(), context.getPackageName()) == 0;
+            return ((AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE)).checkOp("android:system_alert_window", Process.myUid(), context.getPackageName()) == AppOpsManager.MODE_ALLOWED;
         } catch (Exception e) {
             Log.e("mes", "not support", e);
             return false;
