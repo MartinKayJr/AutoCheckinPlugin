@@ -7,6 +7,9 @@ import android.provider.Settings
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
@@ -18,9 +21,8 @@ import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
 import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
 import com.haibin.calendarview.Calendar
+import com.haibin.calendarview.CalendarLayout
 import com.haibin.calendarview.CalendarView
-import com.haibin.calendarview.CalendarView.OnCalendarInterceptListener
-import com.haibin.calendarview.CalendarView.OnCalendarSelectListener
 
 
 const val PACKAGE_WECHAT_WORK = "com.tencent.wework"
@@ -71,12 +73,26 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var enableRootSwitch: CheckBox
 
+
+    /**
+     * 日历相关组件
+     */
     private lateinit var calendarView: CalendarView
+    private lateinit var calendarLayout: CalendarLayout
+    private lateinit var tv_month_day: TextView
+    private lateinit var tv_year: TextView
+    private lateinit var tv_lunar: TextView
+    private lateinit var tv_current_day: TextView
+
+    private lateinit var rl_tool: RelativeLayout
+
+    private var year: Int = 2023
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initViews()
+        initCheckinViews()
+        initCheckinCalendar()
 
         isOpenService()
         isCanBackground()
@@ -125,7 +141,67 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun initViews() {
+    private fun initCheckinCalendar() {
+        calendarView = findViewById(R.id.calendarView)
+        calendarLayout = findViewById(R.id.calendarLayout)
+
+        /**
+         * 日历相关组件初始化
+         */
+        tv_month_day = findViewById(R.id.tv_month_day)
+        tv_year = findViewById(R.id.tv_year)
+        tv_lunar = findViewById(R.id.tv_lunar)
+        rl_tool = findViewById(R.id.rl_tool)
+        tv_current_day = findViewById(R.id.tv_current_day)
+
+        this.year = calendarView.curYear
+
+        tv_month_day.setOnClickListener(View.OnClickListener {
+            if (calendarLayout.isExpand) {
+                calendarLayout.expand()
+                return@OnClickListener
+            }
+
+            calendarView.showYearSelectLayout(year)
+            tv_lunar.visibility = View.GONE
+            this.tv_year.visibility = View.GONE
+            tv_month_day.text = year.toString()
+
+        })
+
+        findViewById<FrameLayout>(R.id.fl_current).setOnClickListener {
+            calendarView.scrollToCurrent()
+        }
+
+
+        tv_month_day.text = calendarView.curMonth.toString() + "月" + calendarView.curDay + "日"
+        tv_lunar.text = "今日"
+        tv_current_day.text = calendarView.curDay.toString()
+
+        findViewById<ImageView>(R.id.iv_clear).setOnClickListener {
+            calendarView.clearSelectRange()
+        }
+
+        calendarView.setOnCalendarMultiSelectListener(object :
+            CalendarView.OnCalendarMultiSelectListener {
+            override fun onCalendarMultiSelectOutOfRange(calendar: Calendar?) {
+
+            }
+
+            override fun onMultiSelectOutOfSize(calendar: Calendar?, maxSize: Int) {
+
+            }
+
+            override fun onCalendarMultiSelect(calendar: Calendar?, curSize: Int, maxSize: Int) {
+                calendar?.scheme = "25"
+            }
+
+        })
+
+
+    }
+
+    private fun initCheckinViews() {
         mEnableAutoSignSwitch = findViewById(R.id.enable_auto_sign)
         // 早上上班 时间范围
         morningWorkStartTimeTv = findViewById(R.id.morning_work_start_time_tv)
@@ -162,8 +238,6 @@ class MainActivity : AppCompatActivity() {
         canBackgroundSwitch = findViewById(R.id.can_background_switch)
 
         enableRootSwitch = findViewById(R.id.enable_root_switch)
-
-        calendarView = findViewById(R.id.calendarView)
 
 
         // 早上上班打卡
@@ -339,22 +413,6 @@ class MainActivity : AppCompatActivity() {
         canBackgroundSwitch.setOnCheckedChangeListener(cbCheckChange)
 
         enableRootSwitch.setOnCheckedChangeListener(cbCheckChange)
-
-        calendarView.setOnCalendarMultiSelectListener(object :
-            CalendarView.OnCalendarMultiSelectListener {
-            override fun onCalendarMultiSelectOutOfRange(calendar: Calendar?) {
-
-            }
-
-            override fun onMultiSelectOutOfSize(calendar: Calendar?, maxSize: Int) {
-
-            }
-
-            override fun onCalendarMultiSelect(calendar: Calendar?, curSize: Int, maxSize: Int) {
-                calendar?.scheme = "25"
-            }
-
-        })
     }
 
     fun onClick(v: View) {
@@ -413,7 +471,8 @@ class MainActivity : AppCompatActivity() {
         val intent = packageManager.getLaunchIntentForPackage(PACKAGE_WECHAT_WORK)
         intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (intent == null) {
-            Toast.makeText(this, "请安装企业微信 或 允许获取已安装应用权限", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "请安装企业微信 或 允许获取已安装应用权限", Toast.LENGTH_SHORT)
+                .show()
             return
         }
         startActivity(intent)
