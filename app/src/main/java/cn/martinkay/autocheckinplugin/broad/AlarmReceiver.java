@@ -11,34 +11,57 @@ import android.util.Log;
 
 import com.topjohnwu.superuser.Shell;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import cn.martinkay.autocheckinplugin.MainActivity;
 import cn.martinkay.autocheckinplugin.constant.Constant;
+import cn.martinkay.autocheckinplugin.util.ShellUtils;
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil;
 
 public class AlarmReceiver extends BroadcastReceiver {
     Random random = new Random();
 
+    Integer[] autoCheckInWeek = {1, 2, 3, 4, 5, 6};
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("ContentValues", "接收闹钟事件");
         try {
+            // 初始化信息，例如ROOT权限
+            initEnv();
             Bundle bundleExtra = intent.getBundleExtra("timer");
             int hour = bundleExtra.getInt("hour");
             int minute = bundleExtra.getInt("minute");
             int requestCode = bundleExtra.getInt("requestCode");
             wakeUpAndUnlock(context);
+            // 先启动自己
             Intent intent2 = new Intent(context, MainActivity.class);
             intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             context.startActivity(intent2);
+
             Log.i("ContentValues", "启动auto-sigin程序");
+
+            // 再启动要打开的APP
             Intent intent3 = new Intent("android.intent.action.MAIN");
             intent3.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             ComponentName componentName = new ComponentName(Constant.getActiveApp().getPackageName(), Constant.getActiveApp().getActivityName());
             Log.i("ContentValues", "openAppByPackageName: " + Constant.getActiveApp().getPackageName() + "," + Constant.getActiveApp().getActivityName());
             intent3.setComponent(componentName);
-            context.startActivity(intent3);
+            // 判断autoCheckInWeek是否包含今天的星期
+            for (int i = 0; i < autoCheckInWeek.length; i++) {
+                // 如果包含，就启动被打卡的APP
+                if (Objects.equals(autoCheckInWeek[i], getWeek())) {
+                    Log.i("ContentValues", "今天是要打卡的星期");
+                    context.startActivity(intent3);
+                    break;
+                } else {
+                    Log.i("ContentValues", "今天不是要打卡的星期");
+                }
+            }
             Log.i("ContentValues", "启动打卡程序");
             if (requestCode == 0) {
                 Log.i("ContentValues", "重新注册上午上班打卡闹钟");
@@ -81,6 +104,25 @@ public class AlarmReceiver extends BroadcastReceiver {
             PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "autocheckinplugin:WakeLockTag");
             wakeLock.acquire();
             ((KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE)).newKeyguardLock("unLock").disableKeyguard();
+        }
+    }
+
+    public static Integer getWeek() {
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        Integer[] weekDays = {7, 1, 2, 3, 4, 5, 6};
+        return weekDays[dayOfWeek - 1];
+    }
+
+    public static void initEnv() {
+        List<String> cmds = new ArrayList<>();
+        cmds.add("ls /data/data");
+        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
+        if (result.result == 0) {
+            Constant.isRoot = true;
+        } else {
+            Constant.isRoot = false;
         }
     }
 }
