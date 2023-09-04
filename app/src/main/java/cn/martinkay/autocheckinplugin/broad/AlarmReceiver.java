@@ -116,13 +116,45 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public static void initEnv() {
-        List<String> cmds = new ArrayList<>();
-        cmds.add("ls /data/data");
-        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
-        if (result.result == 0) {
+        int isRoot = isRoot();
+        if (isRoot == 0) {
             Constant.isRoot = true;
         } else {
             Constant.isRoot = false;
         }
+        // 如果有ROOT并且没有开启辅助功能，就基于ROOT开启辅助功能
+        if (Constant.isRoot && !AlarmReceiver.isAccessibility()) {
+            AlarmReceiver.enableAccessibility();
+        }
+    }
+
+    public static int isRoot() {
+        List<String> cmds = new ArrayList<>();
+        cmds.add("ls /data/data");
+        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
+        return result.result;
+    }
+
+    public static boolean isAccessibility() {
+        List<String> cmds = new ArrayList<>();
+        cmds.add("settings get secure enabled_accessibility_services");
+        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
+        if ("cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService".equals(result.successMsg)) {
+            List<String> cmds2 = new ArrayList<>();
+            cmds2.add("settings get secure accessibility_enabled");
+            ShellUtils.CommandResult result2 = ShellUtils.execCommand(cmds2, true, true);
+            if (result2.result == 0 && "1".equals(result2.successMsg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int enableAccessibility() {
+        List<String> cmds = new ArrayList<>();
+        cmds.add("settings put secure enabled_accessibility_services cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService\n");
+        cmds.add("settings put secure accessibility_enabled 1\n");
+        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
+        return result.result;
     }
 }

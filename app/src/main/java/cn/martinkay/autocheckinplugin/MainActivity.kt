@@ -4,6 +4,7 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
@@ -14,6 +15,7 @@ import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import cn.martinkay.autocheckinplugin.broad.AlarmReceiver
 import cn.martinkay.autocheckinplugin.constant.Constant
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
 import cn.martinkay.autocheckinplugin.util.ShellUtils
@@ -106,10 +108,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSetting() {
+        this.accessblity = AlarmReceiver.isAccessibility()
         if (this.accessblity) {
             SignApplication.getInstance().setFlag(true)
         } else {
-            Toast.makeText(this, "请打开无障碍服务", Toast.LENGTH_SHORT).show()
+            // 如果有root权限 则自动开启无障碍服务
+            if (AlarmReceiver.isRoot() == 0) {
+                enableRootSwitch.isChecked = true
+                if (AlarmReceiver.enableAccessibility() == 0) {
+                    Toast.makeText(this, "ROOT已为您开启无障碍服务", Toast.LENGTH_SHORT).show()
+                    this.accessbilitySwitch.isChecked = true
+                    this.accessblity = true
+                    SignApplication.getInstance().setFlag(true)
+                    Log.i("MainActivity", "无障碍返回" + AlarmReceiver.isAccessibility())
+
+                } else {
+                    Toast.makeText(this, "ROOT为您开启无障碍服务失败", Toast.LENGTH_SHORT).show()
+                    this.accessbilitySwitch.isChecked = false
+                    this.accessblity = false
+                }
+            }
+            Toast.makeText(this, "请手动打开无障碍服务", Toast.LENGTH_SHORT).show()
 //            this.cpdailySwitch.setChecked(false)
 //            this.isEnableAutoSign = false
         }
