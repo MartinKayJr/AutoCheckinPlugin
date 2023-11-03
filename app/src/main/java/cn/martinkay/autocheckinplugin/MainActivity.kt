@@ -552,14 +552,14 @@ class MainActivity : AppCompatActivity() {
                         )
                         Toast.makeText(this, "下午上班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
-                        morningWorkStartTimeTv.text = "$timeStr"
+                        afternoonWorkStartTimeTv.text = "$timeStr"
                     }
                 } else {
                     if (isStart) {
                         SharePrefHelper.putString(SIGN_TASK_AFTERNOON_OFF_WORK_START_TIME, timeStr)
                         Toast.makeText(this, "下午下班打卡开始时间:$timeStr", Toast.LENGTH_SHORT)
                             .show()
-                        morningOffWorkStartTimeTv.text = "$timeStr"
+                        afternoonOffWorkStartTimeTv.text = "$timeStr"
                     }
                 }
                 changeTimeAfter(view, hourOfDay, minute)
