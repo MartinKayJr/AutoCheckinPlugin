@@ -5,6 +5,10 @@ import android.content.SharedPreferences
 
 const val IS_ENABLE_AUTO_SIGN = "is_enable_auto_sign"
 
+const val IS_ENABLE_TIME_JITTER = "is_enable_time_jitter"
+
+const val TIME_JITTER_VALUE = "time_jitter_value"
+
 const val IS_OPEN_MORNING_START_WORK_SIGN_TASK = "is_open_morning_start_work_sign_task"
 const val IS_OPEN_MORNING_OFF_WORK_SIGN_TASK = "is_open_morning_off_work_sign_task"
 

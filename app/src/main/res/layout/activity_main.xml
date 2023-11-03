@@ -50,6 +50,28 @@
                         android:layout_height="match_parent"
                         android:text="后台弹出应用权限" />
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <CheckBox
+                            android:id="@+id/enable_time_jitter"
+                            android:layout_weight="2"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="开启时间抖动→抖动范围:" />
+
+                        <EditText
+                            android:id="@+id/time_jitter_edit_view"
+                            android:text="3"
+                            android:inputType="number"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
                     <CheckBox
                         android:id="@+id/enable_auto_sign"
                         android:layout_width="match_parent"

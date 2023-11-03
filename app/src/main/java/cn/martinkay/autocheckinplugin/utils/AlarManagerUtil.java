@@ -1,5 +1,8 @@
 package cn.martinkay.autocheckinplugin.utils;
 
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_ENABLE_TIME_JITTER;
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.TIME_JITTER_VALUE;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,8 +12,10 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import java.util.Calendar;
+import java.util.Random;
 
 import cn.martinkay.autocheckinplugin.SharePrefHelper;
+import cn.martinkay.autocheckinplugin.broad.AlarmReceiver;
 
 public class AlarManagerUtil {
     private static Context activityA;
@@ -21,9 +26,33 @@ public class AlarManagerUtil {
     private static PendingIntent pendingIntentMonWork;
     private static PendingIntent pendingIntentMonOffWork;
 
+    private static int generateMinute(int week, int baseMinute) {
+        int timeJitterValueInt = 3;
+        int daysSinceLastRest = (week == 1) ? 0 : (week - 1);
+        double negativeWeight = 1.0 - (daysSinceLastRest / 7.0);
+        double random = new Random().nextDouble();
+        double adjustedRandom = random * (1.0 - negativeWeight) + negativeWeight;
+        double lambda = 1.0;
+        double jitterValue = Math.log(1 - adjustedRandom) / (-lambda);
+        int jitterValueInt = (int) Math.ceil(jitterValue);
+        jitterValueInt = Math.min(jitterValueInt, timeJitterValueInt);
+        if (random < negativeWeight) {
+            return baseMinute - jitterValueInt;
+        } else {
+            return baseMinute + jitterValueInt;
+        }
+    }
+
     public static void timedTackMonWork(Context activity, int hour, int minute, int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+
+        // 判断是否开启了时间抖动
+        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        if (isEnableTimeJitter) {
+            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
@@ -54,6 +83,13 @@ public class AlarManagerUtil {
     public static void timedTackMonOffWork(Context activity, int hour, int minute, int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+
+        // 判断是否开启了时间抖动
+        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        if (isEnableTimeJitter) {
+            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
@@ -83,6 +119,13 @@ public class AlarManagerUtil {
     public static void timedTackAfWork(Context activity, int hour, int minute, int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+
+        // 判断是否开启了时间抖动
+        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        if (isEnableTimeJitter) {
+            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
@@ -112,6 +155,13 @@ public class AlarManagerUtil {
     public static void timedTackAfOffWork(Context activity, int hour, int minute, int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
+
+        // 判断是否开启了时间抖动
+        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        if (isEnableTimeJitter) {
+            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);

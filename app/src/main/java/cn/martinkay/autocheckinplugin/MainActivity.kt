@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -33,7 +34,13 @@ class MainActivity : AppCompatActivity() {
 
     private var isEnableAutoSign = false
 
+    private var isEnableTimeJitter = false
+
     private lateinit var mEnableAutoSignSwitch: CheckBox
+
+    private lateinit var mEnableTimeJitterSwitch: CheckBox
+
+    private lateinit var mTimeJitterEditText: EditText
 
     private var accessblity = false
 
@@ -221,7 +228,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCheckinViews() {
+        // 开启自动打卡总开关
         mEnableAutoSignSwitch = findViewById(R.id.enable_auto_sign)
+
+        // 开启时间抖动
+        mEnableTimeJitterSwitch = findViewById(R.id.enable_time_jitter)
+        mTimeJitterEditText = findViewById(R.id.time_jitter_edit_view)
+
         // 早上上班 时间范围
         morningWorkStartTimeTv = findViewById(R.id.morning_work_start_time_tv)
         // 早上下班 时间范围
@@ -252,6 +265,13 @@ class MainActivity : AppCompatActivity() {
         // 早上上班打卡
         isEnableAutoSign = SharePrefHelper.getBoolean(IS_ENABLE_AUTO_SIGN, false)
         mEnableAutoSignSwitch.isChecked = isEnableAutoSign
+
+        isEnableTimeJitter = SharePrefHelper.getBoolean(IS_ENABLE_TIME_JITTER, false)
+        mEnableTimeJitterSwitch.isChecked = isEnableTimeJitter
+
+        val timeJitterValue = SharePrefHelper.getString(TIME_JITTER_VALUE, "3")
+        mTimeJitterEditText.setText(timeJitterValue)
+
 
         accessbilitySwitch = findViewById(R.id.accessbility_switch)
         canBackgroundSwitch = findViewById(R.id.can_background_switch)
@@ -328,6 +348,38 @@ class MainActivity : AppCompatActivity() {
                 R.id.can_background_switch -> {
                     if (buttonView.isPressed) {
                         JumpPermissionManagement.GoToSetting(this)
+                    }
+                }
+
+                // 开启时间抖动
+                R.id.enable_time_jitter -> {
+                    isEnableTimeJitter = isChecked
+                    SharePrefHelper.putBoolean(IS_ENABLE_TIME_JITTER, isChecked)
+                    if (isChecked) {
+                        val timeJitterValue = mTimeJitterEditText.text.toString()
+                        // 判断是否为数字
+                        if (!timeJitterValue.matches(Regex("[0-9]+"))) {
+                            Toast.makeText(
+                                this,
+                                "时间抖动值必须为数字",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            mEnableTimeJitterSwitch.isChecked = false
+                            isEnableTimeJitter = false
+                            return@OnCheckedChangeListener
+                        }
+                        SharePrefHelper.putString(TIME_JITTER_VALUE, timeJitterValue)
+                        Toast.makeText(
+                            this,
+                            "已开启时间抖动，抖动值为$timeJitterValue",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "已关闭时间抖动",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
@@ -430,6 +482,7 @@ class MainActivity : AppCompatActivity() {
         mEnableAutoSignSwitch.setOnCheckedChangeListener(cbCheckChange)
         accessbilitySwitch.setOnCheckedChangeListener(cbCheckChange)
         canBackgroundSwitch.setOnCheckedChangeListener(cbCheckChange)
+        mEnableTimeJitterSwitch.setOnCheckedChangeListener(cbCheckChange)
 
         enableRootSwitch.setOnCheckedChangeListener(cbCheckChange)
     }
