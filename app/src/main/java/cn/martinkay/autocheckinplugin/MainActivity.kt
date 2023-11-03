@@ -2,10 +2,12 @@ package cn.martinkay.autocheckinplugin
 
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.EditText
@@ -26,11 +28,45 @@ import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.CalendarLayout
 import com.haibin.calendarview.CalendarView
+import rikka.shizuku.Shizuku
+import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
 
 
 const val PACKAGE_WECHAT_WORK = "com.tencent.wework"
 
 class MainActivity : AppCompatActivity() {
+
+    private val RL = OnRequestPermissionResultListener { i: Int, i1: Int -> onRequestPermissionsResult(i, i1) }
+
+    var shizukuIsRun = false
+    var shizukuIsAccept = false
+    var m = 0
+
+    private lateinit var shizukuIsRunBtn: Button
+    private lateinit var shizukuIsAcceptBtn: Button
+    private fun onRequestPermissionsResult(i: Int, i1: Int) {
+        check()
+    }
+
+    private fun check() {
+
+        //本函数用于检查shizuku状态，b代表shizuk是否运行，c代表shizuku是否授权
+        shizukuIsRun = true
+        shizukuIsAccept = false
+        try {
+            if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) Shizuku.requestPermission(0) else shizukuIsAccept = true
+        } catch (e: Exception) {
+            if (checkSelfPermission("moe.shizuku.manager.permission.API_V23") == PackageManager.PERMISSION_GRANTED) shizukuIsAccept = true
+            if (e.javaClass == IllegalStateException::class.java) {
+                shizukuIsRun = false
+                Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
+            }
+        }
+        shizukuIsRunBtn.text = if (shizukuIsRun) "Shizuku\n已运行" else "Shizuku\n未运行"
+        shizukuIsRunBtn.setTextColor(if (shizukuIsRun) m else 0x77ff0000)
+        shizukuIsAcceptBtn.text = if (shizukuIsAccept) "Shizuku\n已授权" else "Shizuku\n未授权"
+        shizukuIsAcceptBtn.setTextColor(if (shizukuIsAccept) m else 0x77ff0000)
+    }
 
     private var isEnableAutoSign = false
 
@@ -100,12 +136,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initShizuku()
         initCheckinViews()
         initCheckinCalendar()
 
         isOpenService()
         isCanBackground()
         initSetting()
+    }
+
+    private fun initShizuku() {
+        //shizuku返回授权结果时将执行RL函数
+        Shizuku.addRequestPermissionResultListener(RL);
+
+        //m用于保存shizuku状态显示按钮的初始颜色（int类型哦），为的是适配安卓12的莫奈取色，方便以后恢复颜色时用
+        m = shizukuIsRunBtn.currentTextColor
+
+        //检查Shizuk是否运行，并申请Shizuku权限
+        check()
     }
 
     override fun onResume() {
@@ -641,4 +689,18 @@ class MainActivity : AppCompatActivity() {
         mTimePickerDialog?.cancel()
         mTimePickerDialog = null
     }
+
+    fun ch(view: View?) {
+        //本函数绑定了主界面两个显示Shizuk状态的按钮的点击事件
+        check()
+    }
+
+    override fun onDestroy() {
+        //在APP退出时，取消注册Shizuku授权结果监听，这是Shizuku的要求
+        Shizuku.removeRequestPermissionResultListener(RL)
+        super.onDestroy()
+    }
+
+
+
 }

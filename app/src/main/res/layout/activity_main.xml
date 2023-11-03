@@ -56,19 +56,19 @@
 
                         <CheckBox
                             android:id="@+id/enable_time_jitter"
-                            android:layout_weight="2"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="2"
                             android:text="开启时间抖动→抖动范围:" />
 
                         <EditText
                             android:id="@+id/time_jitter_edit_view"
-                            android:text="3"
-                            android:inputType="number"
-                            android:gravity="center"
-                            android:layout_weight="1"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:inputType="number"
+                            android:text="3" />
 
                     </LinearLayout>
 
@@ -79,6 +79,43 @@
                         android:text="开启自动打卡" />
                 </LinearLayout>
 
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="6dp"
+                app:contentPadding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/shizuku_is_run_btn"
+                            style="@style/s"
+                            android:onClick="ch"
+                            android:text="Shizuku未运行" />
+
+                        <Button
+                            android:id="@+id/shizuku_is_accept_btn"
+                            style="@style/s"
+                            android:text="Shizuku未授权" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -290,9 +327,9 @@
 
                     <RelativeLayout
                         android:id="@+id/rl_tool"
-                        android:background="#fff"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp">
+                        android:layout_height="52dp"
+                        android:background="#fff">
 
                         <TextView
                             android:id="@+id/tv_month_day"

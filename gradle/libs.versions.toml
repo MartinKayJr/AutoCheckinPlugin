@@ -27,6 +27,12 @@ libsu-core = { module = "com.github.topjohnwu.libsu:core", version = "3.0.1" }
 libsu-io = { module = "com.github.topjohnwu.libsu:io", version = "3.0.1" }
 
 calendarview = { module = "com.haibin:calendarview", version = "3.7.1" }
+
+shizuku-api = { module = "dev.rikka.shizuku:api", version = "13.1.5" }
+
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version = "13.1.5" }
+
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
