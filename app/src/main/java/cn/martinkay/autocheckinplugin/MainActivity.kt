@@ -3,6 +3,7 @@ package cn.martinkay.autocheckinplugin
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -23,6 +24,7 @@ import cn.martinkay.autocheckinplugin.constant.Constant
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
 import cn.martinkay.autocheckinplugin.util.ShellUtils
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
+import cn.martinkay.autocheckinplugin.utils.HShizuku
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
 import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
 import com.haibin.calendarview.Calendar
@@ -44,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var shizukuIsRunBtn: Button
     private lateinit var shizukuIsAcceptBtn: Button
+
+    private lateinit var testCloseAppBtn: Button
     private fun onRequestPermissionsResult(i: Int, i1: Int) {
         check()
     }
@@ -136,13 +140,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initShizuku()
         initCheckinViews()
         initCheckinCalendar()
 
         isOpenService()
         isCanBackground()
         initSetting()
+        initShizuku()
+
     }
 
     private fun initShizuku() {
@@ -282,6 +287,13 @@ class MainActivity : AppCompatActivity() {
         // 开启时间抖动
         mEnableTimeJitterSwitch = findViewById(R.id.enable_time_jitter)
         mTimeJitterEditText = findViewById(R.id.time_jitter_edit_view)
+
+        // Shizuku
+        shizukuIsRunBtn = findViewById(R.id.shizuku_is_run_btn)
+        shizukuIsAcceptBtn = findViewById(R.id.shizuku_is_accept_btn)
+
+        // 测试关闭屏幕
+        testCloseAppBtn = findViewById(R.id.test_close_app_btn)
 
         // 早上上班 时间范围
         morningWorkStartTimeTv = findViewById(R.id.morning_work_start_time_tv)
@@ -537,6 +549,12 @@ class MainActivity : AppCompatActivity() {
 
     fun onClick(v: View) {
         when (v.id) {
+
+            R.id.test_close_app_btn -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    HShizuku.forceStopApp("com.tencent.wework")
+                }
+            }
 
             R.id.start_sign -> {
                 gotoWeWork()
