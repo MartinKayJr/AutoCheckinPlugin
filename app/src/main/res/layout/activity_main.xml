@@ -38,6 +38,13 @@
                         android:layout_height="match_parent"
                         android:text="开启ROOT(吊炸天)" />
 
+
+                    <CheckBox
+                        android:id="@+id/enable_shizuku_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="开启Shizuku(吊炸天)" />
+
                     <CheckBox
                         android:id="@+id/accessbility_switch"
                         android:layout_width="match_parent"

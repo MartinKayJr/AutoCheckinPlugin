@@ -32,6 +32,7 @@ import cn.martinkay.autocheckinplugin.SignApplication;
 import cn.martinkay.autocheckinplugin.constant.Constant;
 import cn.martinkay.autocheckinplugin.handler.BaseHandler;
 import cn.martinkay.autocheckinplugin.handler.WeixinHandler;
+import cn.martinkay.autocheckinplugin.utils.HShizuku;
 
 public class MyAccessibilityService extends AccessibilityService {
     private static final String TAG = "MyAccessibilityService";
@@ -179,10 +180,22 @@ public class MyAccessibilityService extends AccessibilityService {
         if (Constant.isRoot) {
             try {
                 if (Shell.su("am force-stop " + packageName).exec().isSuccess()) {
-                    Log.i("MyAccessibilityService", "息屏成功");
+                    Log.i("MyAccessibilityService", "关闭APP成功");
+                    return true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        } else if (Constant.isShizuku) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                boolean killPackage = HShizuku.INSTANCE.forceStopApp(packageName);
+                if (killPackage) {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder关闭APP成功");
+                    return true;
+                } else {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder关闭APP失败");
+                    return false;
+                }
             }
         }
         return false;
@@ -202,9 +215,21 @@ public class MyAccessibilityService extends AccessibilityService {
             try {
                 if (Shell.su("input keyevent 26").exec().isSuccess()) {
                     Log.i("MyAccessibilityService", "息屏成功");
+                    return true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        } else if (Constant.isShizuku) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                boolean lockScreen = HShizuku.INSTANCE.getLockScreen();
+                if (lockScreen) {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder息屏成功");
+                    return true;
+                } else {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder息屏失败");
+                    return false;
+                }
             }
         }
         return false;

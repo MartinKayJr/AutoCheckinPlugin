@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -21,6 +22,9 @@ import cn.martinkay.autocheckinplugin.MainActivity;
 import cn.martinkay.autocheckinplugin.constant.Constant;
 import cn.martinkay.autocheckinplugin.util.ShellUtils;
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil;
+import cn.martinkay.autocheckinplugin.utils.HShizuku;
+import kotlin.Pair;
+import rikka.shizuku.Shizuku;
 
 public class AlarmReceiver extends BroadcastReceiver {
     Random random = new Random();
@@ -32,7 +36,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Log.i("ContentValues", "接收闹钟事件");
         try {
             // 初始化信息，例如ROOT权限
-            initEnv();
+            initEnv(context);
             Bundle bundleExtra = intent.getBundleExtra("timer");
             int hour = bundleExtra.getInt("hour");
             int minute = bundleExtra.getInt("minute");
@@ -93,10 +97,19 @@ public class AlarmReceiver extends BroadcastReceiver {
             if (Constant.isRoot) {
                 try {
                     if (Shell.su("input keyevent 26").exec().isSuccess()) {
-                        Log.i("MyAccessibilityService", "亮屏成功");
+                        Log.i("AlarmReceiver", "ROOT shell亮屏成功");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+            }
+        } else if (Constant.isShizuku) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                boolean lockScreen = HShizuku.INSTANCE.getLockScreen();
+                if (lockScreen) {
+                    Log.i("AlarmReceiver", "Shizuku ibinder亮屏成功");
+                } else {
+                    Log.i("AlarmReceiver", "Shizuku ibinder亮屏失败");
                 }
             }
         } else {
@@ -115,35 +128,71 @@ public class AlarmReceiver extends BroadcastReceiver {
         return weekDays[dayOfWeek - 1];
     }
 
-    public static void initEnv() {
+    public static void initEnv(Context context) {
         int isRoot = isRoot();
         if (isRoot == 0) {
             Constant.isRoot = true;
         } else {
             Constant.isRoot = false;
         }
-        // 如果有ROOT并且没有开启辅助功能，就基于ROOT开启辅助功能
-        if (Constant.isRoot && !AlarmReceiver.isAccessibility()) {
-            AlarmReceiver.enableAccessibility();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            boolean isShizuku = HShizuku.INSTANCE.isEnable(context);
+            if (isShizuku) {
+                Constant.isShizuku = true;
+            } else {
+                Constant.isShizuku = false;
+            }
+        }
+        if (Constant.isRoot) {
+            Log.i("AlarmReceiver", "基于ROOT开启辅助功能");
+            // 如果有ROOT并且没有开启辅助功能，就基于ROOT开启辅助功能
+            if (Constant.isRoot && !AlarmReceiver.isAccessibility()) {
+                AlarmReceiver.enableAccessibility();
+            }
+        } else {
+            Log.i("AlarmReceiver", "基于Shizuku开启辅助功能");
+            // 如果有Shizuku并且没有开启辅助功能，就基于Shizuku开启辅助功能
+            if (Constant.isShizuku && !AlarmReceiver.isAccessibilityByShizuku(Constant.isRoot)) {
+                AlarmReceiver.enableAccessibilityByShizuku(Constant.isRoot);
+            }
         }
     }
 
     public static int isRoot() {
-        List<String> cmds = new ArrayList<>();
-        cmds.add("ls /data/data");
-        ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
-        return result.result;
+        try {
+            List<String> cmds = new ArrayList<>();
+            cmds.add("ls /data/data");
+            ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
+            return result.result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public static boolean isAccessibility() {
         List<String> cmds = new ArrayList<>();
         cmds.add("settings get secure enabled_accessibility_services");
         ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
-        if ("cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService".equals(result.successMsg)) {
+        // 注意：如果开启了多个辅助功能，这里的successMsg会有多个，所以不能用equals，而是用contains
+        if ("cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService".contains(result.successMsg)) {
             List<String> cmds2 = new ArrayList<>();
             cmds2.add("settings get secure accessibility_enabled");
             ShellUtils.CommandResult result2 = ShellUtils.execCommand(cmds2, true, true);
             if (result2.result == 0 && "1".equals(result2.successMsg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isAccessibilityByShizuku(boolean isRoot) {
+        Pair<Integer, String> result = HShizuku.INSTANCE.execute("settings get secure enabled_accessibility_services", isRoot);
+        // 注意：如果开启了多个辅助功能，这里的successMsg会有多个，所以不能用equals，而是用contains
+        Log.i("AlarmReceiver", "isAccessibilityByShizuku: " + result.getFirst() + "--" + result.getSecond());
+        if ("cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService".contains(result.getSecond())) {
+            Pair<Integer, String> result2 = HShizuku.INSTANCE.execute("settings get secure accessibility_enabled", isRoot);
+            if (result2.getFirst() == 0 && "1".equals(result2.getSecond())) {
                 return true;
             }
         }
@@ -156,5 +205,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         cmds.add("settings put secure accessibility_enabled 1\n");
         ShellUtils.CommandResult result = ShellUtils.execCommand(cmds, true, true);
         return result.result;
+    }
+
+    public static int enableAccessibilityByShizuku(boolean isRoot) {
+        Pair<Integer, String> result = HShizuku.INSTANCE.execute("settings put secure enabled_accessibility_services cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService\n", true);
+        Pair<Integer, String> result2 = HShizuku.INSTANCE.execute("settings put secure accessibility_enabled 1\n", true);
+        Log.i("AlarmReceiver", "enableAccessibilityByShizuku: " + result.getFirst() + "--" + result.getSecond() + "--" + result2.getFirst() + "--" + result2.getSecond());
+        return result2.getFirst();
     }
 }

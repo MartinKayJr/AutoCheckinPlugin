@@ -13,6 +13,8 @@ public class Constant {
 
     public static boolean isRoot = false;
 
+    public static boolean isShizuku = false;
+
     public static ActiveAppinfo getActiveApp() {
         if (activeAppinfo == null) {
             String str = active_app;

@@ -1,12 +1,16 @@
 package cn.martinkay.autocheckinplugin.utils
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import cn.martinkay.autocheckinplugin.utils.HPackages.myUserId
 import moe.shizuku.server.IShizukuService
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -27,6 +31,27 @@ object HShizuku {
             }
         }
 
+    fun isEnable(ctx: Context): Boolean {
+        //本函数用于检查shizuku状态，shizukuIsRun代表shizuk是否运行，shizukuIsAccept代表shizuku是否授权
+        var shizukuIsRun = true
+        var shizukuIsAccept = false
+        try {
+            if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) Shizuku.requestPermission(
+                0
+            ) else shizukuIsAccept = true
+        } catch (e: Exception) {
+            if (ContextCompat.checkSelfPermission(
+                    ctx,
+                    "moe.shizuku.manager.permission.API_V23"
+                ) == PackageManager.PERMISSION_GRANTED
+            ) shizukuIsAccept = true
+            if (e.javaClass == IllegalStateException::class.java) {
+                shizukuIsRun = false
+            }
+        }
+        return shizukuIsRun && shizukuIsAccept
+    }
+
     val lockScreen
         @RequiresApi(Build.VERSION_CODES.P)
         get() = runCatching {
@@ -46,7 +71,6 @@ object HShizuku {
             HLog.e(it)
             false
         }
-
 
 
     @RequiresApi(Build.VERSION_CODES.P)

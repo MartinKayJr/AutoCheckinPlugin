@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "cn.martinkay.autocheckinplugin"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "cn.martinkay.autocheckinplugin"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 2
         versionName = "1.4"
 

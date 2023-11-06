@@ -38,7 +38,8 @@ const val PACKAGE_WECHAT_WORK = "com.tencent.wework"
 
 class MainActivity : AppCompatActivity() {
 
-    private val RL = OnRequestPermissionResultListener { i: Int, i1: Int -> onRequestPermissionsResult(i, i1) }
+    private val RL =
+        OnRequestPermissionResultListener { i: Int, i1: Int -> onRequestPermissionsResult(i, i1) }
 
     var shizukuIsRun = false
     var shizukuIsAccept = false
@@ -54,13 +55,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun check() {
 
-        //本函数用于检查shizuku状态，b代表shizuk是否运行，c代表shizuku是否授权
+        //本函数用于检查shizuku状态，shizukuIsRun代表shizuk是否运行，shizukuIsAccept代表shizuku是否授权
         shizukuIsRun = true
         shizukuIsAccept = false
         try {
-            if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) Shizuku.requestPermission(0) else shizukuIsAccept = true
+            if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) Shizuku.requestPermission(
+                0
+            ) else shizukuIsAccept = true
         } catch (e: Exception) {
-            if (checkSelfPermission("moe.shizuku.manager.permission.API_V23") == PackageManager.PERMISSION_GRANTED) shizukuIsAccept = true
+            if (checkSelfPermission("moe.shizuku.manager.permission.API_V23") == PackageManager.PERMISSION_GRANTED) shizukuIsAccept =
+                true
             if (e.javaClass == IllegalStateException::class.java) {
                 shizukuIsRun = false
                 Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
@@ -121,6 +125,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var canBackgroundSwitch: CheckBox
 
     private lateinit var enableRootSwitch: CheckBox
+    private lateinit var enableShizukuSwitch: CheckBox
 
 
     /**
@@ -168,7 +173,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSetting() {
-        this.accessblity = AlarmReceiver.isAccessibility()
+
+        if (Constant.isRoot) {
+            this.accessblity = AlarmReceiver.isAccessibility()
+        } else if (Constant.isShizuku) {
+            this.accessblity = AlarmReceiver.isAccessibilityByShizuku(Constant.isRoot)
+        }
         if (this.accessblity) {
             SignApplication.getInstance().setFlag(true)
         } else {
@@ -184,6 +194,19 @@ class MainActivity : AppCompatActivity() {
 
                 } else {
                     Toast.makeText(this, "ROOT为您开启无障碍服务失败", Toast.LENGTH_SHORT).show()
+                    this.accessbilitySwitch.isChecked = false
+                    this.accessblity = false
+                }
+            } else if (HShizuku.isEnable(this)) {
+                enableShizukuSwitch.isChecked = true
+                if (AlarmReceiver.enableAccessibilityByShizuku(Constant.isRoot) == 0) {
+                    Toast.makeText(this, "Shizuku已为您开启无障碍服务", Toast.LENGTH_SHORT).show()
+                    this.accessbilitySwitch.isChecked = true
+                    this.accessblity = true
+                    SignApplication.getInstance().setFlag(true)
+                    Log.i("MainActivity", "无障碍返回" + AlarmReceiver.isAccessibilityByShizuku(Constant.isRoot))
+                } else {
+                    Toast.makeText(this, "Shizuku为您开启无障碍服务失败", Toast.LENGTH_SHORT).show()
                     this.accessbilitySwitch.isChecked = false
                     this.accessblity = false
                 }
@@ -337,7 +360,7 @@ class MainActivity : AppCompatActivity() {
         canBackgroundSwitch = findViewById(R.id.can_background_switch)
 
         enableRootSwitch = findViewById(R.id.enable_root_switch)
-
+        enableShizukuSwitch = findViewById(R.id.enable_shizuku_switch)
 
         // 早上上班打卡
         val isMorningStartOpen =
@@ -379,11 +402,8 @@ class MainActivity : AppCompatActivity() {
                 // 开启ROOT
                 R.id.enable_root_switch -> {
                     if (buttonView.isPressed) {
-                        val cmds = ArrayList<String>()
-                        cmds.add("ls /data/data")
-                        val result: ShellUtils.CommandResult =
-                            ShellUtils.execCommand(cmds, true, true)
-                        if (result.result == 0) {
+                        val result = AlarmReceiver.isRoot();
+                        if (result == 0) {
                             Constant.isRoot = true
                             enableRootSwitch.isChecked = true
                             Toast.makeText(this, "ROOT权限已开启", Toast.LENGTH_SHORT).show()
@@ -391,6 +411,28 @@ class MainActivity : AppCompatActivity() {
                             Constant.isRoot = false
                             enableRootSwitch.isChecked = false
                             Toast.makeText(this, "ROOT权限未开启", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                R.id.enable_shizuku_switch -> {
+                    if (buttonView.isPressed) {
+                        // 检查Shizuk是否运行，并申请Shizuku权限
+                        check()
+                        if (shizukuIsRun) {
+                            if (shizukuIsAccept) {
+                                Toast.makeText(this, "Shizuku已授权", Toast.LENGTH_SHORT).show()
+                                Constant.isShizuku = true
+                                enableShizukuSwitch.isChecked = true
+                            } else {
+                                Toast.makeText(this, "Shizuku未授权", Toast.LENGTH_SHORT).show()
+                                Constant.isShizuku = false
+                                enableShizukuSwitch.isChecked = false
+                            }
+                        } else {
+                            Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
+                            Constant.isShizuku = false
+                            enableShizukuSwitch.isChecked = false
                         }
                     }
                 }
@@ -545,6 +587,7 @@ class MainActivity : AppCompatActivity() {
         mEnableTimeJitterSwitch.setOnCheckedChangeListener(cbCheckChange)
 
         enableRootSwitch.setOnCheckedChangeListener(cbCheckChange)
+        enableShizukuSwitch.setOnCheckedChangeListener(cbCheckChange)
     }
 
     fun onClick(v: View) {
@@ -718,7 +761,6 @@ class MainActivity : AppCompatActivity() {
         Shizuku.removeRequestPermissionResultListener(RL)
         super.onDestroy()
     }
-
 
 
 }
