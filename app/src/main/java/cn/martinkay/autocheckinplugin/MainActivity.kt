@@ -1,10 +1,14 @@
 package cn.martinkay.autocheckinplugin
 
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -22,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.martinkay.autocheckinplugin.broad.AlarmReceiver
 import cn.martinkay.autocheckinplugin.constant.Constant
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
-import cn.martinkay.autocheckinplugin.util.ShellUtils
+import cn.martinkay.autocheckinplugin.service.WifiLockService
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.HShizuku
 import cn.martinkay.autocheckinplugin.utils.IsServiceRunningUtil
@@ -152,7 +156,14 @@ class MainActivity : AppCompatActivity() {
         isCanBackground()
         initSetting()
         initShizuku()
+        isIgnoreBatteryOption(this)
+        lockWifiService()
+    }
 
+    private fun lockWifiService() {
+        // 启动WifiLockService
+        val intent = Intent(this, WifiLockService::class.java)
+        startService(intent)
     }
 
     private fun initShizuku() {
@@ -170,6 +181,24 @@ class MainActivity : AppCompatActivity() {
         isOpenService()
         isCanBackground()
         super.onResume()
+    }
+
+    fun isIgnoreBatteryOption(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                val intent = Intent()
+                val packageName: String = context.getPackageName()
+                val pm: PowerManager =
+                    context.getSystemService(Context.POWER_SERVICE) as PowerManager
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                    intent.data = Uri.parse("package:$packageName")
+                    context.startActivity(intent)
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun initSetting() {
@@ -204,7 +233,10 @@ class MainActivity : AppCompatActivity() {
                     this.accessbilitySwitch.isChecked = true
                     this.accessblity = true
                     SignApplication.getInstance().setFlag(true)
-                    Log.i("MainActivity", "无障碍返回" + AlarmReceiver.isAccessibilityByShizuku(Constant.isRoot))
+                    Log.i(
+                        "MainActivity",
+                        "无障碍返回" + AlarmReceiver.isAccessibilityByShizuku(Constant.isRoot)
+                    )
                 } else {
                     Toast.makeText(this, "Shizuku为您开启无障碍服务失败", Toast.LENGTH_SHORT).show()
                     this.accessbilitySwitch.isChecked = false

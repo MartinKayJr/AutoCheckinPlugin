@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
+    <!--  豁免白名单  -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!--  Android14增加的什么前台服务权限  -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -69,6 +71,13 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <service android:name=".service.WifiLockService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="WIFI状态锁"
+            android:foregroundServiceType="dataSync">
         </service>
 
         <provider
