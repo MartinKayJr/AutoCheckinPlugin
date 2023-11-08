@@ -99,6 +99,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                     if (Shell.su("input keyevent 26").exec().isSuccess()) {
                         Log.i("AlarmReceiver", "ROOT shell亮屏成功");
                     }
+                    if (Shell.su("input swipe 300 1000 300 500").exec().isSuccess()) {
+                        Log.i("AlarmReceiver", "ROOT shell向上滑动解锁成功");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -110,6 +113,12 @@ public class AlarmReceiver extends BroadcastReceiver {
                     Log.i("AlarmReceiver", "Shizuku ibinder亮屏成功");
                 } else {
                     Log.i("AlarmReceiver", "Shizuku ibinder亮屏失败");
+                }
+                Pair<Integer, String> execute = HShizuku.INSTANCE.execute("input swipe 300 1000 300 500", Constant.isRoot);
+                if (execute.getFirst() == 0) {
+                    Log.i("AlarmReceiver", "Shizuku ibinder向上滑动解锁成功");
+                } else {
+                    Log.i("AlarmReceiver", "Shizuku ibinder向上滑动解锁失败");
                 }
             }
         } else {

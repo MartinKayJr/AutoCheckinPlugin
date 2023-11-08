@@ -55,7 +55,7 @@ public class MyAccessibilityService extends AccessibilityService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_IMMUTABLE);
             NotificationChannel channel = new NotificationChannel("im_channel_id", "System", NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel);
@@ -104,8 +104,15 @@ public class MyAccessibilityService extends AccessibilityService {
 
     private Notification getNotification() {
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                    PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "")
                 .setContentTitle("自动签到服务运行于前台")
                 .setContentText("service被设为前台进程")

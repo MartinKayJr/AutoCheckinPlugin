@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import cn.martinkay.autocheckinplugin.broad.AlarmReceiver
 import cn.martinkay.autocheckinplugin.constant.Constant
 import cn.martinkay.autocheckinplugin.service.BackgroundAccess
+import cn.martinkay.autocheckinplugin.service.MyAccessibilityService
 import cn.martinkay.autocheckinplugin.service.WifiLockService
 import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil
 import cn.martinkay.autocheckinplugin.utils.HShizuku
@@ -164,6 +165,9 @@ class MainActivity : AppCompatActivity() {
         // 启动WifiLockService
         val intent = Intent(this, WifiLockService::class.java)
         startService(intent)
+        // 启动MyAccessibilityService
+        val intent2 = Intent(this, MyAccessibilityService::class.java)
+        startService(intent2)
     }
 
     private fun initShizuku() {
@@ -646,14 +650,14 @@ class MainActivity : AppCompatActivity() {
                 val startTimeStr = getMorningOffWorkStartTimeStr()
                 var startHour = startTimeStr.split(":")[0].toInt()
                 val startMinute = startTimeStr.split(":")[1].toInt()
-                showMorningDateTimePicker(true, true, startHour, startMinute)
+                showMorningDateTimePicker(true, false, startHour, startMinute)
             }
 
             R.id.afternoon_work_start_time_tv -> {
                 val startTimeStr = getAfternoonStartWorkStartTimeStr()
                 var startHour = startTimeStr.split(":")[0].toInt()
                 val startMinute = startTimeStr.split(":")[1].toInt()
-                showAfternoonDateTimePicker(true, false, startHour, startMinute)
+                showAfternoonDateTimePicker(true, true, startHour, startMinute)
             }
 
             R.id.afternoon_offwork_start_time_tv -> {
