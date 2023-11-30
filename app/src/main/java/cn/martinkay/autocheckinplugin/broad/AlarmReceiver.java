@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 
+import cn.martinkay.autocheckinplugin.SharePrefHelper;
 import com.topjohnwu.superuser.Shell;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import cn.martinkay.autocheckinplugin.utils.AlarManagerUtil;
 import cn.martinkay.autocheckinplugin.utils.HShizuku;
 import kotlin.Pair;
 import rikka.shizuku.Shizuku;
+
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.SIGN_OPEN_INTENT_START_TIME;
 
 public class AlarmReceiver extends BroadcastReceiver {
     Random random = new Random();
@@ -82,6 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             Intent launchIntentForPackage = context.getPackageManager().getLaunchIntentForPackage(Constant.getActiveApp().getPackageName());
             if (launchIntentForPackage != null) {
+                SharePrefHelper.INSTANCE.putLong(SIGN_OPEN_INTENT_START_TIME, System.currentTimeMillis());
                 context.startActivity(launchIntentForPackage);
                 Log.i("ContentValues", "启动打卡程序2");
             }

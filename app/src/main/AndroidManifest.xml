@@ -102,4 +102,9 @@
         <!--        </service>-->
     </application>
 
+    <!--  Android 11以上权限限制，加入这个才能取到launchIntent  -->
+    <queries>
+        <package android:name="com.tencent.wework" />
+    </queries>
+
 </manifest>
