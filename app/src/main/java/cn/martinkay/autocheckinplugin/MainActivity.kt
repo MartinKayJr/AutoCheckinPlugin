@@ -692,6 +692,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
             return
         }
+        SharePrefHelper.putLong(SIGN_OPEN_INTENT_START_TIME, System.currentTimeMillis())
         startActivity(intent)
     }
 

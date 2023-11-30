@@ -26,6 +26,9 @@ const val SIGN_TASK_MORNING_OFF_WORK_START_TIME = "sign_task_morning_off_work_st
 const val SIGN_TASK_AFTERNOON_START_WORK_START_TIME = "sign_task_start_work_start_time"
 
 const val SIGN_TASK_AFTERNOON_OFF_WORK_START_TIME = "sign_task_stop_work_start_time"
+
+const val SIGN_OPEN_INTENT_START_TIME = "sign_open_intent_start_time"
+
 object SharePrefHelper {
     private var mShare: SharedPreferences? = null
 
@@ -52,6 +55,16 @@ object SharePrefHelper {
 
     fun getString(key: String, default: String?): String {
         return getSharePref().getString(key, default).toString()
+    }
+
+    fun putLong(key: String, value: Long) {
+        val editor = getSharePref().edit()
+        editor.putLong(key, value)
+        editor.apply()
+    }
+
+    fun getLong(key: String, default: Long): Long {
+        return getSharePref().getLong(key, default)
     }
 
     fun putBoolean(key: String, value: Boolean = false) {

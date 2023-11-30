@@ -3,9 +3,12 @@ package cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import cn.martinkay.autocheckinplugin.SharePrefHelper;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.BasePageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
 import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
+
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.SIGN_OPEN_INTENT_START_TIME;
 
 public class CompleteProcessor extends BasePageProcessor {
     @Override
@@ -39,7 +42,12 @@ public class CompleteProcessor extends BasePageProcessor {
 
     @Override
     public void processPage(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) {
-        Log.i("Weixin-SigninPageProcessor", "拦截重复打卡");
+        long startTime = SharePrefHelper.INSTANCE.getLong(SIGN_OPEN_INTENT_START_TIME, 0);
+        if ((System.currentTimeMillis() - startTime) > 5_000) {
+            Log.i("Weixin-SigninPageProcessor", "不是由程序打开的，忽略");
+            return;
+        }
+        Log.w("Weixin-SigninPageProcessor", "拦截重复打卡");
         myAccessibilityService.clickHomeKey();
         myAccessibilityService.closeApp("com.tencent.wework");
         myAccessibilityService.autoLock();
