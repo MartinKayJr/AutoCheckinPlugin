@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -62,11 +64,11 @@
                         android:layout_height="wrap_content">
 
                         <CheckBox
-                            android:id="@+id/enable_time_jitter"
+                            android:id="@+id/time_jitter_switch"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="2"
-                            android:text="开启时间抖动→抖动范围:" />
+                            android:text="开启时间抖动→上下抖动:" />
 
                         <EditText
                             android:id="@+id/time_jitter_edit_view"
@@ -84,6 +86,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="开启自动打卡" />
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -111,15 +114,15 @@
                         <Button
                             android:id="@+id/shizuku_is_run_btn"
                             style="@style/s"
-                            android:textColor="@color/black"
                             android:onClick="ch"
-                            android:text="Shizuku未运行" />
+                            android:text="Shizuku未运行"
+                            android:textColor="@color/black" />
 
                         <Button
                             android:id="@+id/shizuku_is_accept_btn"
-                            android:textColor="@color/black"
                             style="@style/s"
-                            android:text="Shizuku未授权" />
+                            android:text="Shizuku未授权"
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
@@ -170,7 +173,7 @@
                         android:orientation="horizontal">
 
                         <CheckBox
-                            android:id="@+id/morning_start_work_cb"
+                            android:id="@+id/morning_start_work_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -204,7 +207,7 @@
                         android:orientation="horizontal">
 
                         <CheckBox
-                            android:id="@+id/morning_off_work_cb"
+                            android:id="@+id/morning_off_work_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -238,7 +241,7 @@
                         android:orientation="horizontal">
 
                         <CheckBox
-                            android:id="@+id/afternoon_start_work_cb"
+                            android:id="@+id/afternoon_start_work_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -271,12 +274,11 @@
                         android:orientation="horizontal">
 
                         <CheckBox
-                            android:id="@+id/afternoon_off_work_cb"
+                            android:id="@+id/afternoon_off_work_switch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:checked="true" />
-
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -334,6 +336,14 @@
                         android:textColor="@android:color/background_dark"
                         android:textSize="20sp" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="规则描述：长按禁用当日打卡，单击启用当日打卡，默认为周一到周五自动打卡"
+                        android:textColor="#99000000"
+                        android:textSize="10sp" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -387,12 +397,12 @@
                         </LinearLayout>
 
                         <ImageView
-                            android:id="@+id/iv_clear"
+                            android:id="@+id/clear_calendar_view"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_centerVertical="true"
                             android:layout_marginRight="12dp"
-                            android:layout_toLeftOf="@+id/fl_current"
+                            android:layout_toLeftOf="@+id/current_calendar_view"
                             android:background="@drawable/bg_ripple"
                             android:contentDescription="@string/app_name"
                             android:padding="7dp"
@@ -401,7 +411,7 @@
                             app:tint="#333333" />
 
                         <FrameLayout
-                            android:id="@+id/fl_current"
+                            android:id="@+id/current_calendar_view"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_alignParentRight="true"
@@ -435,7 +445,7 @@
                         android:id="@+id/calendarLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#fff"
+                        android:layout_marginBottom="100dp"
                         android:orientation="vertical"
                         app:calendar_content_view_id="@+id/recyclerView"
                         app:calendar_show_mode="only_month_view"
@@ -446,48 +456,30 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="#fff"
-                            app:calendar_padding_left="22dp"
-                            app:calendar_padding_right="10dp"
-                            app:current_day_lunar_text_color="#ff0000"
-                            app:current_day_text_color="#ff0000"
+                            app:calendar_height="52dp"
                             app:current_month_lunar_text_color="#CFCFCF"
                             app:current_month_text_color="#333333"
-                            app:lunar_text_size="10sp"
-                            app:max_year="2050"
-                            app:max_year_day="31"
-                            app:max_year_month="12"
-                            app:min_year="2008"
-                            app:min_year_day="1"
-                            app:min_year_month="1"
-                            app:month_view="cn.martinkay.autocheckinplugin.calendarview.CustomMonthView"
-                            app:month_view_auto_select_day="last_select_day_ignore_current"
-                            app:month_view_show_mode="mode_only_current"
+                            app:day_text_size="14sp"
+                            app:max_year="2020"
+                            app:min_year="2004"
+                            app:month_view="cn.martinkay.autocheckinplugin.calendarview.ProgressMonthView"
+                            app:month_view_show_mode="mode_fix"
                             app:other_month_lunar_text_color="#e1e1e1"
                             app:other_month_text_color="#e1e1e1"
-                            app:scheme_lunar_text_color="#CFCFCF"
                             app:scheme_text="假"
                             app:scheme_text_color="#333"
                             app:scheme_theme_color="#128c4b"
-                            app:select_mode="multi_mode"
-                            app:selected_lunar_text_color="#128c4b"
-                            app:selected_text_color="#128c4b"
-                            app:selected_theme_color="#4D0099FF"
+                            app:select_mode="single_mode"
+                            app:selected_lunar_text_color="#CFCFCF"
+                            app:selected_text_color="#FFFFFF"
+                            app:selected_theme_color="#FFf54a00"
                             app:week_background="#fff"
-                            app:week_bar_height="46dp"
-                            app:week_line_background="#00000000"
-                            app:week_line_margin="16dp"
-                            app:week_start_with="sun"
-                            app:week_text_size="10sp"
-                            app:week_view="cn.martinkay.autocheckinplugin.calendarview.CustomWeekView"
-                            app:year_view_background="#f6f6f6"
+                            app:week_text_color="#111111"
                             app:year_view_day_text_color="#333333"
-                            app:year_view_day_text_size="8sp"
+                            app:year_view_day_text_size="9sp"
                             app:year_view_month_text_color="#ff0000"
                             app:year_view_month_text_size="20sp"
-                            app:year_view_scheme_color="#f17706"
-                            app:year_view_week_height="0dp"
-                            app:year_view_week_text_color="#666666"
-                            app:year_view_week_text_size="7sp" />
+                            app:year_view_scheme_color="#f17706" />
 
                     </com.haibin.calendarview.CalendarLayout>
 

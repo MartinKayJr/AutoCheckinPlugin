@@ -15,7 +15,6 @@ const val IS_OPEN_MORNING_OFF_WORK_SIGN_TASK = "is_open_morning_off_work_sign_ta
 const val IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK = "is_open_afternoon_start_work_sign_task"
 const val IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK = "is_open_afternoon_off_work_sign_task"
 
-
 const val IS_OPEN_SATURDAY_SIGN_TASK = "is_open_saturday_sign_task"
 const val IS_OPEN_SUNDAY_SIGN_TASK = "is_open_sunday_sign_task"
 
@@ -29,11 +28,21 @@ const val SIGN_TASK_AFTERNOON_OFF_WORK_START_TIME = "sign_task_stop_work_start_t
 
 const val SIGN_OPEN_INTENT_START_TIME = "sign_open_intent_start_time"
 
+const val SIGN_CALENDAR_SCHEME_CACHE = "sign_calendar_scheme_cache"
+
+const val VERSION_UPDATE_FLAG = "version_update_flag"
+
 object SharePrefHelper {
+
     private var mShare: SharedPreferences? = null
 
     init {
         getSharePref()
+        if (!getBoolean(VERSION_UPDATE_FLAG, false)) {
+            // 抖动变为long类型，版本更新清除旧存储值，否则会崩溃
+            remove(TIME_JITTER_VALUE)
+            putBoolean(VERSION_UPDATE_FLAG, true)
+        }
     }
 
     private fun initSharePref(ctx: Context): SharedPreferences {
@@ -75,6 +84,10 @@ object SharePrefHelper {
 
     fun getBoolean(key: String, default: Boolean): Boolean {
         return getSharePref().getBoolean(key, default)
+    }
+
+    fun remove(key: String) {
+        getSharePref().edit().remove(key).apply()
     }
 }
 
