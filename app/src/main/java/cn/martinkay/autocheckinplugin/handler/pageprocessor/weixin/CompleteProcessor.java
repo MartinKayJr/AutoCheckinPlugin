@@ -50,10 +50,10 @@ public class CompleteProcessor extends BasePageProcessor {
             MyAccessibilityService myAccessibilityService) {
         long startTime = SharePrefHelper.INSTANCE.getLong(SIGN_OPEN_INTENT_START_TIME, 0);
         if ((System.currentTimeMillis() - startTime) > 5000) {
-            Log.i("Weixin-CompleteProcessor", "不是由程序打开的，忽略");
+            Log.i("CompleteProcessor", "不是由程序打开的，忽略");
             return;
         }
-        Log.w("Weixin-CompleteProcessor", "打卡成功 关闭");
+        Log.w("CompleteProcessor", "打卡成功 关闭");
         AutoSignPermissionUtils.INSTANCE.increaseTodayAutoSignCount();
         myAccessibilityService.clickHomeKey();
         myAccessibilityService.closeApp("com.tencent.wework");

@@ -12,7 +12,7 @@ import cn.martinkay.autocheckinplugin.utils.AutoSignPermissionUtils;
 import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.SIGN_OPEN_INTENT_START_TIME;
 
 public class SiginInProcessor extends BasePageProcessor {
-    private final String TAG = "Weixin-SigninPageProcessor";
+    private final String TAG = "SigninPageProcessor";
 
     @Override public void processPage(AccessibilityEvent event,
             MyAccessibilityService myAccessibilityService) {
@@ -28,14 +28,14 @@ public class SiginInProcessor extends BasePageProcessor {
                 if (workSign != null) {
                     AccessibilityHelper.clickButtonByNode(myAccessibilityService, workSign);
                     Thread.sleep(3000L);
-                    Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
+                    Log.i("SigninPageProcessor", "打卡成功-已完成，返回页面");
                     runAccessibilityService(myAccessibilityService);
                 }
 
                 if (offWorkSign != null) {
                     AccessibilityHelper.clickButtonByNode(myAccessibilityService, offWorkSign);
                     Thread.sleep(3000L);
-                    Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
+                    Log.i("SigninPageProcessor", "打卡成功-已完成，返回页面");
                     runAccessibilityService(myAccessibilityService);
                 }
             } else {
@@ -43,18 +43,18 @@ public class SiginInProcessor extends BasePageProcessor {
             }
             // 第一次打卡完成
             if (findNodesByText(myAccessibilityService, "今日打卡已完成") != null) {
-                Log.i("Weixin-SigninPageProcessor", "打卡成功-已完成，返回页面");
+                Log.i("SigninPageProcessor", "打卡成功-已完成，返回页面");
                 runAccessibilityService(myAccessibilityService);
             }
         } catch (Exception unused) {
-            Log.i("Weixin", "工作台打卡失败");
+            Log.i("SigninPageProcessor", "工作台打卡失败");
         }
     }
 
     private void runAccessibilityService(MyAccessibilityService myAccessibilityService) {
         long startTime = SharePrefHelper.INSTANCE.getLong(SIGN_OPEN_INTENT_START_TIME, 0);
         if ((System.currentTimeMillis() - startTime) > 5000) {
-            Log.i("Weixin-SigninPageProcessor", "不是由程序打开的，忽略");
+            Log.i("SigninPageProcessor", "不是由程序打开的，忽略");
             return;
         }
         AutoSignPermissionUtils.INSTANCE.increaseTodayAutoSignCount();

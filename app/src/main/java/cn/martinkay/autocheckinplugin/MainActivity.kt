@@ -305,7 +305,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         binding.enableAutoSign.isChecked = autoSignConfig.isEnableAutoSign
 
-        // TODO 版本升级，需要清除掉之前的 string 值
         val readTimeJitterValue = SharePrefHelper.getLong(TIME_JITTER_VALUE, 3)
         binding.timeJitterSwitch.isChecked = autoSignConfig.isEnableTimeJitter
         binding.timeJitterEditView.setText(readTimeJitterValue.toString())
@@ -582,16 +581,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun gotoWeWork() {
-        // TODO
-        AutoSignPermissionUtils.increaseTodayAutoSignCount()
-        //val intent = packageManager.getLaunchIntentForPackage(PACKAGE_WECHAT_WORK)
-        //intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        //if (intent == null) {
-        //    Toast.makeText(this, "请安装企业微信 或 允许获取已安装应用权限", Toast.LENGTH_SHORT)
-        //        .show()
-        //    return
-        //}
-        //startActivity(intent)
+        val intent = packageManager.getLaunchIntentForPackage(PACKAGE_WECHAT_WORK)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (intent == null) {
+            Toast.makeText(this, "请安装企业微信 或 允许获取已安装应用权限", Toast.LENGTH_SHORT)
+                .show()
+            return
+        }
+        startActivity(intent)
     }
 
     private var mTimePickerDialog: TimePickerDialog? = null
