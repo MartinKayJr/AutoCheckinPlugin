@@ -22,8 +22,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -48,6 +47,7 @@ dependencies {
 
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     implementation(libs.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -63,4 +63,5 @@ dependencies {
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
     implementation(libs.hiddenapibypass)
+    implementation(libs.fastjson)
 }

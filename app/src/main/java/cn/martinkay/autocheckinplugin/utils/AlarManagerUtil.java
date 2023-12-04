@@ -1,8 +1,5 @@
 package cn.martinkay.autocheckinplugin.utils;
 
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_ENABLE_TIME_JITTER;
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.TIME_JITTER_VALUE;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,12 +7,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
-
+import cn.martinkay.autocheckinplugin.SharePrefHelper;
 import java.util.Calendar;
 import java.util.Random;
 
-import cn.martinkay.autocheckinplugin.SharePrefHelper;
-import cn.martinkay.autocheckinplugin.broad.AlarmReceiver;
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_ENABLE_TIME_JITTER;
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.TIME_JITTER_VALUE;
 
 public class AlarManagerUtil {
     private static Context activityA;
@@ -26,21 +23,13 @@ public class AlarManagerUtil {
     private static PendingIntent pendingIntentMonWork;
     private static PendingIntent pendingIntentMonOffWork;
 
-    private static int generateMinute(int week, int baseMinute) {
-        int timeJitterValueInt = 3;
-        int daysSinceLastRest = (week == 1) ? 0 : (week - 1);
-        double negativeWeight = 1.0 - (daysSinceLastRest / 7.0);
-        double random = new Random().nextDouble();
-        double adjustedRandom = random * (1.0 - negativeWeight) + negativeWeight;
-        double lambda = 1.0;
-        double jitterValue = Math.log(1 - adjustedRandom) / (-lambda);
-        int jitterValueInt = (int) Math.ceil(jitterValue);
-        jitterValueInt = Math.min(jitterValueInt, timeJitterValueInt);
-        if (random < negativeWeight) {
-            return baseMinute - jitterValueInt;
-        } else {
-            return baseMinute + jitterValueInt;
+    private static int generateMinute(int baseMinute) {
+        int readTimeJitterValue = (int) SharePrefHelper.INSTANCE.getLong(TIME_JITTER_VALUE, 0);
+        if (readTimeJitterValue == 0) {
+            return baseMinute;
         }
+        int randomValue = readTimeJitterValue - new Random().nextInt(readTimeJitterValue * 2);
+        return baseMinute + randomValue;
     }
 
     public static void timedTackMonWork(Context activity, int hour, int minute, int requestCode) {
@@ -48,9 +37,10 @@ public class AlarManagerUtil {
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
         // 判断是否开启了时间抖动
-        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        boolean isEnableTimeJitter =
+                SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
         if (isEnableTimeJitter) {
-            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+            minute = generateMinute(minute);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -66,9 +56,11 @@ public class AlarManagerUtil {
         intent.setPackage(activity.getPackageName());
         PendingIntent broadcast;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_MUTABLE);
         } else {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
         }
         pendingIntentMonWork = broadcast;
         alarmManager.cancel(broadcast);
@@ -79,15 +71,16 @@ public class AlarManagerUtil {
         configure(timeInMillis, pendingIntentMonWork);
     }
 
-
-    public static void timedTackMonOffWork(Context activity, int hour, int minute, int requestCode) {
+    public static void timedTackMonOffWork(Context activity, int hour, int minute,
+            int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
         // 判断是否开启了时间抖动
-        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        boolean isEnableTimeJitter =
+                SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
         if (isEnableTimeJitter) {
-            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+            minute = generateMinute(minute);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -103,9 +96,11 @@ public class AlarManagerUtil {
         intent.setPackage(activity.getPackageName());
         PendingIntent broadcast;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_MUTABLE);
         } else {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
         }
         pendingIntentMonOffWork = broadcast;
         alarmManager.cancel(broadcast);
@@ -121,9 +116,10 @@ public class AlarManagerUtil {
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
         // 判断是否开启了时间抖动
-        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        boolean isEnableTimeJitter =
+                SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
         if (isEnableTimeJitter) {
-            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+            minute = generateMinute(minute);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -139,9 +135,11 @@ public class AlarManagerUtil {
         intent.setPackage(activity.getPackageName());
         PendingIntent broadcast;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_MUTABLE);
         } else {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
         }
         pendingIntentAfWork = broadcast;
         alarmManager.cancel(broadcast);
@@ -157,9 +155,10 @@ public class AlarManagerUtil {
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
         // 判断是否开启了时间抖动
-        boolean isEnableTimeJitter = SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
+        boolean isEnableTimeJitter =
+                SharePrefHelper.INSTANCE.getBoolean(IS_ENABLE_TIME_JITTER, false);
         if (isEnableTimeJitter) {
-            minute = generateMinute(AlarmReceiver.getWeek() + 1, minute);
+            minute = generateMinute(minute);
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -175,9 +174,11 @@ public class AlarManagerUtil {
         intent.setPackage(activity.getPackageName());
         PendingIntent broadcast;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_MUTABLE);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_MUTABLE);
         } else {
-            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            broadcast = PendingIntent.getBroadcast(activity, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
         }
         pendingIntentAfOffWork = broadcast;
         alarmManager.cancel(broadcast);
@@ -192,11 +193,13 @@ public class AlarManagerUtil {
         if (Build.VERSION.SDK_INT >= 23) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (alarmManager != null && alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis,
+                            pendingIntent);
                     return;
                 }
             }
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis,
+                    pendingIntent);
         } else if (Build.VERSION.SDK_INT >= 19) {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
         } else {
