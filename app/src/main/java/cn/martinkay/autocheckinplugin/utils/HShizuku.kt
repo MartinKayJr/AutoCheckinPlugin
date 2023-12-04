@@ -8,7 +8,6 @@ import android.os.ParcelFileDescriptor
 import android.os.SystemClock
 import android.view.InputEvent
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import cn.martinkay.autocheckinplugin.utils.HPackages.myUserId
@@ -23,13 +22,14 @@ object HShizuku {
     private val userId get() = if (isRoot) myUserId else 0
 
     @RequiresApi(Build.VERSION_CODES.P)
-    private fun asInterface(className: String, serviceName: String): Any =
-        ShizukuBinderWrapper(SystemServiceHelper.getSystemService(serviceName)).let {
-            Class.forName("$className\$Stub").run {
-                if (HTarget.P) HiddenApiBypass.invoke(this, null, "asInterface", it)
-                else getMethod("asInterface", IBinder::class.java).invoke(null, it)
-            }
+    private fun asInterface(className: String, serviceName: String): Any = ShizukuBinderWrapper(
+        SystemServiceHelper.getSystemService(serviceName)
+    ).let {
+        Class.forName("$className\$Stub").run {
+            if (HTarget.P) HiddenApiBypass.invoke(this, null, "asInterface", it)
+            else getMethod("asInterface", IBinder::class.java).invoke(null, it)
         }
+    }
 
     fun isEnable(ctx: Context): Boolean {
         //本函数用于检查shizuku状态，shizukuIsRun代表shizuk是否运行，shizukuIsAccept代表shizuku是否授权
@@ -41,8 +41,7 @@ object HShizuku {
             ) else shizukuIsAccept = true
         } catch (e: Exception) {
             if (ContextCompat.checkSelfPermission(
-                    ctx,
-                    "moe.shizuku.manager.permission.API_V23"
+                    ctx, "moe.shizuku.manager.permission.API_V23"
                 ) == PackageManager.PERMISSION_GRANTED
             ) shizukuIsAccept = true
             if (e.javaClass == IllegalStateException::class.java) {
@@ -53,8 +52,7 @@ object HShizuku {
     }
 
     val lockScreen
-        @RequiresApi(Build.VERSION_CODES.P)
-        get() = runCatching {
+        @RequiresApi(Build.VERSION_CODES.P) get() = runCatching {
             val input = asInterface("android.hardware.input.IInputManager", "input")
             val inject = input::class.java.getMethod(
                 "injectInputEvent", InputEvent::class.java, Int::class.java
@@ -71,7 +69,6 @@ object HShizuku {
             HLog.e(it)
             false
         }
-
 
     @RequiresApi(Build.VERSION_CODES.P)
     fun forceStopApp(packageName: String) = runCatching {
@@ -90,7 +87,7 @@ object HShizuku {
         false
     }
 
-    fun execute(command: String, root: Boolean = isRoot): Pair<Int, String?> = runCatching {
+    fun execute(command: String, root: Boolean = isRoot): Pair<Int, String> = runCatching {
         IShizukuService.Stub.asInterface(Shizuku.getBinder())
             .newProcess(arrayOf(if (root) "su" else "sh"), null, null).run {
                 ParcelFileDescriptor.AutoCloseOutputStream(outputStream).use {
