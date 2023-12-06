@@ -2,13 +2,13 @@ package cn.martinkay.autocheckinplugin.handler;
 
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.CompleteProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.MessagePageProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.SiginInProcessor;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin.WorkPageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
 import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
+import cn.martinkay.autocheckinplugin.utils.AutoSignPermissionUtils;
 
 public class WeixinHandler implements BaseHandler {
     private static final String TAG = "WeixinHandler";
@@ -20,8 +20,14 @@ public class WeixinHandler implements BaseHandler {
     private CompleteProcessor completeProcessor = new CompleteProcessor();
 
     @Override
-    public void doHandle(AccessibilityEvent event, MyAccessibilityService myAccessibilityService) throws Exception {
-        AccessibilityNodeInfo nodeById = AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/hrb", 0);
+    public void doHandle(AccessibilityEvent event, MyAccessibilityService myAccessibilityService)
+            throws Exception {
+        if (!AutoSignPermissionUtils.INSTANCE.isMobileAutoSignLaunch()) {
+            return;
+        }
+        AccessibilityNodeInfo nodeById =
+                AccessibilityHelper.getNodeById(myAccessibilityService, "com.tencent.wework:id/hrb",
+                        0);
         if (nodeById != null) {
             AccessibilityHelper.clickButtonByNode(myAccessibilityService, nodeById);
         } else if (this.messagePageProcessor.canParse(event, myAccessibilityService)) {
@@ -39,8 +45,7 @@ public class WeixinHandler implements BaseHandler {
         }
     }
 
-    @Override
-    public boolean canHandler(String packageName2) {
+    @Override public boolean canHandler(String packageName2) {
         return packageName.equals(packageName2);
     }
 }

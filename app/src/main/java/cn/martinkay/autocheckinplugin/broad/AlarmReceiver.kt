@@ -25,35 +25,47 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.i("ContentValues", "接收闹钟事件")
         try {
-            // 初始化信息，例如ROOT权限
+            // 1. 初始化信息，例如ROOT权限
             initEnv(context)
-            val bundleExtra = intent.getBundleExtra("timer")
-            val hour = bundleExtra!!.getInt("hour")
+            val bundleExtra = intent.getBundleExtra("timer") ?: return
+            val hour = bundleExtra.getInt("hour")
             val minute = bundleExtra.getInt("minute")
             val requestCode = bundleExtra.getInt("requestCode")
             wakeUpAndUnlock(context)
-            // 先启动自己
+            // 2. 先启动自己到主界面
             val intent2 = Intent(context, MainActivity::class.java)
             intent2.flags = (Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             context.startActivity(intent2)
-            Log.i("ContentValues", "启动auto-sigin程序")
-
-            // 再启动要打开的APP
-            val intent3 = Intent("android.intent.action.MAIN")
-            intent3.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            val componentName = ComponentName(
-                Constant.getActiveApp().packageName, Constant.getActiveApp().activityName
-            )
-            Log.i(
-                "ContentValues",
-                "openAppByPackageName: " + Constant.getActiveApp().packageName + "," + Constant.getActiveApp().activityName
-            )
-            intent3.component = componentName
+            // 3. 打开企业微信
             val autoSignAllowed = AutoSignPermissionUtils.isTodayAutoSignAllowed()
-            // 判断打卡日是否包含今天
             if (autoSignAllowed) {
                 Log.i("ContentValues", "今天是要打卡的星期")
-                context.startActivity(intent3)
+                val launchIntentForPackage = context.packageManager.getLaunchIntentForPackage(
+                    Constant.getActiveApp().packageName
+                )
+                if (launchIntentForPackage != null) {
+                    SharePrefHelper.putLong(
+                        SIGN_OPEN_INTENT_START_TIME, System.currentTimeMillis()
+                    )
+                    Log.i("ContentValues", "启动打卡程序 by launchIntentForPackage")
+                    context.startActivity(launchIntentForPackage)
+                } else {
+                    val componentIntent = Intent("android.intent.action.MAIN").apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        component = ComponentName(
+                            Constant.getActiveApp().packageName,
+                            Constant.getActiveApp().activityName
+                        )
+                    }
+                    SharePrefHelper.putLong(
+                        SIGN_OPEN_INTENT_START_TIME, System.currentTimeMillis()
+                    )
+                    Log.i(
+                        "ContentValues",
+                        "启动打卡程序 by openAppByPackageName ${Constant.getActiveApp().packageName},${Constant.getActiveApp().activityName}"
+                    )
+                    context.startActivity(componentIntent)
+                }
             } else {
                 Log.i("ContentValues", "今天不是要打卡的星期")
             }
@@ -77,14 +89,6 @@ class AlarmReceiver : BroadcastReceiver() {
                     Log.i("ContentValues", "重新注册下午下班打卡闹钟")
                     AlarManagerUtil.timedTackAfOffWork(context, hour, minute, requestCode)
                 }
-            }
-            val launchIntentForPackage = context.packageManager.getLaunchIntentForPackage(Constant.getActiveApp().packageName)
-            if (autoSignAllowed && launchIntentForPackage != null) {
-                SharePrefHelper.putLong(
-                    SIGN_OPEN_INTENT_START_TIME, System.currentTimeMillis()
-                )
-                context.startActivity(launchIntentForPackage)
-                Log.i("ContentValues", "启动打卡程序2")
             }
             Log.e("ContentValues", "定时成功！")
         } catch (e: Exception) {
@@ -136,11 +140,11 @@ class AlarmReceiver : BroadcastReceiver() {
             }
         }
 
-        fun initEnv(context: Context?) {
+        fun initEnv(context: Context) {
             val isRoot = isRoot
             Constant.isRoot = isRoot == 0
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val isShizuku = isEnable(context!!)
+                val isShizuku = isEnable(context)
                 Constant.isShizuku = isShizuku
             }
             if (Constant.isRoot) {
@@ -199,7 +203,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 "AlarmReceiver", "isAccessibilityByShizuku: $first--$second"
             )
             if ("cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService".contains(
-                    second!!
+                    second
                 )
             ) {
                 val (first1, second1) = execute("settings get secure accessibility_enabled", isRoot)

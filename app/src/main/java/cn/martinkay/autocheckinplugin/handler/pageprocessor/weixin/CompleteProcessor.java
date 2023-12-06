@@ -2,13 +2,10 @@ package cn.martinkay.autocheckinplugin.handler.pageprocessor.weixin;
 
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import cn.martinkay.autocheckinplugin.SharePrefHelper;
 import cn.martinkay.autocheckinplugin.handler.pageprocessor.BasePageProcessor;
 import cn.martinkay.autocheckinplugin.service.MyAccessibilityService;
 import cn.martinkay.autocheckinplugin.util.AccessibilityHelper;
 import cn.martinkay.autocheckinplugin.utils.AutoSignPermissionUtils;
-
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.SIGN_OPEN_INTENT_START_TIME;
 
 public class CompleteProcessor extends BasePageProcessor {
     @Override public boolean canParse(AccessibilityEvent event,
@@ -48,9 +45,7 @@ public class CompleteProcessor extends BasePageProcessor {
 
     @Override public void processPage(AccessibilityEvent event,
             MyAccessibilityService myAccessibilityService) {
-        long startTime = SharePrefHelper.INSTANCE.getLong(SIGN_OPEN_INTENT_START_TIME, 0);
-        if ((System.currentTimeMillis() - startTime) > 5000) {
-            Log.i("CompleteProcessor", "不是由程序打开的，忽略");
+        if (!AutoSignPermissionUtils.INSTANCE.isMobileAutoSignLaunch()) {
             return;
         }
         Log.w("CompleteProcessor", "打卡成功 关闭");
