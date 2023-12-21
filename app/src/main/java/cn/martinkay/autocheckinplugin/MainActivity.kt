@@ -225,7 +225,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             binding.tvLunar.isGone = true
             binding.tvYear.isGone = true
             binding.tvMonthDay.text = autoSignConfig.year.toString()
-
         })
 
         binding.currentCalendarView.setOnClickListener {
@@ -254,7 +253,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun onCalendarInterceptClick(calendar: Calendar, isClick: Boolean) {
-                Toast.makeText(this@MainActivity, "过去时间不支持设置", Toast.LENGTH_SHORT).show()
+                if (isClick) {
+                    Toast.makeText(this@MainActivity, "过去时间不支持设置", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         })
         binding.calendarView.setOnCalendarSelectListener(object :
@@ -263,6 +265,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun onCalendarSelect(calendar: Calendar, isClick: Boolean) {
+                if (!isClick) return
                 val oldScheme = calendar.scheme
                 val newScheme = if (oldScheme != CalendarScheme.AUTO_SIGN_DAY_ALLOW) {
                     CalendarScheme.AUTO_SIGN_DAY_ALLOW
@@ -271,8 +274,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 calendar.scheme = newScheme
                 autoSignConfig.updateScheme(calendar.toString(), newScheme)
-                changeTimeAfter()
-                Log.w("MainActivity", "onCalendarSelect")
             }
         })
         binding.calendarView.setOnCalendarLongClickListener(object :
@@ -281,7 +282,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun onCalendarLongClick(calendar: Calendar) {
-                Log.w("MainActivity", "onCalendarLongClick")
                 val oldScheme = calendar.scheme
                 val newScheme = if (oldScheme != CalendarScheme.AUTO_SIGN_DAY_FORBIDDEN) {
                     CalendarScheme.AUTO_SIGN_DAY_FORBIDDEN
@@ -290,7 +290,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 calendar.scheme = newScheme
                 autoSignConfig.updateScheme(calendar.toString(), newScheme)
-                changeTimeAfter()
             }
         }, true)
 
