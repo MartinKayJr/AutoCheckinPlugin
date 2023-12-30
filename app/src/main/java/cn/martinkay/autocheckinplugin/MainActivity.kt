@@ -62,16 +62,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 0
             ) else autoSignConfig.shizukuIsAccept = true
         } catch (e: Exception) {
-            if (checkSelfPermission("moe.shizuku.manager.permission.API_V23") == PackageManager.PERMISSION_GRANTED) autoSignConfig.shizukuIsAccept = true
+            if (checkSelfPermission("moe.shizuku.manager.permission.API_V23") == PackageManager.PERMISSION_GRANTED) autoSignConfig.shizukuIsAccept =
+                true
             if (e.javaClass == IllegalStateException::class.java) {
                 autoSignConfig.shizukuIsRun = false
                 Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
             }
         }
 
-        binding.shizukuIsRunBtn.text = if (autoSignConfig.shizukuIsRun) "Shizuku\n已运行" else "Shizuku\n未运行"
+        binding.shizukuIsRunBtn.text =
+            if (autoSignConfig.shizukuIsRun) "Shizuku\n已运行" else "Shizuku\n未运行"
         binding.shizukuIsRunBtn.setTextColor(if (autoSignConfig.shizukuIsRun) autoSignConfig.initShizukuTextColor else 0x77ff0000)
-        binding.shizukuIsAcceptBtn.text = if (autoSignConfig.shizukuIsAccept) "Shizuku\n已授权" else "Shizuku\n未授权"
+        binding.shizukuIsAcceptBtn.text =
+            if (autoSignConfig.shizukuIsAccept) "Shizuku\n已授权" else "Shizuku\n未授权"
         binding.shizukuIsAcceptBtn.setTextColor(if (autoSignConfig.shizukuIsAccept) autoSignConfig.initShizukuTextColor else 0x77ff0000)
     }
 
@@ -231,7 +234,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             binding.calendarView.scrollToCurrent()
         }
 
-        binding.tvMonthDay.text = "${binding.calendarView.curMonth}月${binding.calendarView.curDay}日"
+        binding.tvMonthDay.text =
+            "${binding.calendarView.curMonth}月${binding.calendarView.curDay}日"
+        binding.tvCurrentYearMonth.text =
+            "<${binding.calendarView.curYear}年${binding.calendarView.curMonth}月>"
         binding.tvLunar.text = "今日"
         binding.tvCurrentDay.text = binding.calendarView.curDay.toString()
 
@@ -294,6 +300,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }, true)
 
         binding.calendarView.setSchemeDate(autoSignConfig.compositeSchemeData())
+
+        binding.calendarView.setOnMonthChangeListener(object : CalendarView.OnMonthChangeListener {
+            override fun onMonthChange(year: Int, month: Int) {
+                binding.tvCurrentYearMonth.text =
+                    "<${year}年${month}月>"
+            }
+        })
     }
 
     private fun initCheckinViews() {
@@ -338,176 +351,186 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         binding.afternoonStartWorkSwitch.isChecked = isAfternoonStartOpen
         binding.afternoonOffWorkSwitch.isChecked = isAfternoonOffOpen
 
-        val commonOnCheckedChangeListener = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            when (buttonView.id) {
-                // 开启ROOT
-                R.id.enable_root_switch -> {
-                    if (buttonView.isPressed) {
-                        val result = AlarmReceiver.isRoot
-                        if (result == 0) {
-                            Constant.isRoot = true
-                            binding.enableRootSwitch.isChecked = true
-                            Toast.makeText(this, "ROOT权限已开启", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Constant.isRoot = false
-                            binding.enableRootSwitch.isChecked = false
-                            Toast.makeText(this, "ROOT权限未开启", Toast.LENGTH_SHORT).show()
+        val commonOnCheckedChangeListener =
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                when (buttonView.id) {
+                    // 开启ROOT
+                    R.id.enable_root_switch -> {
+                        if (buttonView.isPressed) {
+                            val result = AlarmReceiver.isRoot
+                            if (result == 0) {
+                                Constant.isRoot = true
+                                binding.enableRootSwitch.isChecked = true
+                                Toast.makeText(this, "ROOT权限已开启", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Constant.isRoot = false
+                                binding.enableRootSwitch.isChecked = false
+                                Toast.makeText(this, "ROOT权限未开启", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
-                }
 
-                R.id.enable_shizuku_switch -> {
-                    if (buttonView.isPressed) {
-                        // 检查Shizuk是否运行，并申请Shizuku权限
-                        check()
-                        if (autoSignConfig.shizukuIsRun) {
-                            if (autoSignConfig.shizukuIsAccept) {
-                                Toast.makeText(this, "Shizuku已授权", Toast.LENGTH_SHORT).show()
-                                Constant.isShizuku = true
-                                binding.enableShizukuSwitch.isChecked = true
+                    R.id.enable_shizuku_switch -> {
+                        if (buttonView.isPressed) {
+                            // 检查Shizuk是否运行，并申请Shizuku权限
+                            check()
+                            if (autoSignConfig.shizukuIsRun) {
+                                if (autoSignConfig.shizukuIsAccept) {
+                                    Toast.makeText(this, "Shizuku已授权", Toast.LENGTH_SHORT).show()
+                                    Constant.isShizuku = true
+                                    binding.enableShizukuSwitch.isChecked = true
+                                } else {
+                                    Toast.makeText(this, "Shizuku未授权", Toast.LENGTH_SHORT).show()
+                                    Constant.isShizuku = false
+                                    binding.enableShizukuSwitch.isChecked = false
+                                }
                             } else {
-                                Toast.makeText(this, "Shizuku未授权", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
                                 Constant.isShizuku = false
                                 binding.enableShizukuSwitch.isChecked = false
                             }
-                        } else {
-                            Toast.makeText(this, "Shizuku未运行", Toast.LENGTH_SHORT).show()
-                            Constant.isShizuku = false
-                            binding.enableShizukuSwitch.isChecked = false
                         }
                     }
-                }
 
-                R.id.accessbility_switch -> {
-                    if (buttonView.isPressed) {
-                        if (autoSignConfig.accessblity) {
-                            gotoAccessibilityAct()
-                        } else {
-                            gotoAccessibilityAct()
+                    R.id.accessbility_switch -> {
+                        if (buttonView.isPressed) {
+                            if (autoSignConfig.accessblity) {
+                                gotoAccessibilityAct()
+                            } else {
+                                gotoAccessibilityAct()
+                            }
                         }
                     }
-                }
 
-                R.id.can_background_switch -> {
-                    if (buttonView.isPressed) {
-                        JumpPermissionManagement.GoToSetting(this)
+                    R.id.can_background_switch -> {
+                        if (buttonView.isPressed) {
+                            JumpPermissionManagement.GoToSetting(this)
+                        }
                     }
-                }
 
-                // 开启时间抖动
-                R.id.time_jitter_switch -> {
-                    autoSignConfig.isEnableTimeJitter = isChecked
-                    SharePrefHelper.putBoolean(IS_ENABLE_TIME_JITTER, isChecked)
-                    if (isChecked) {
-                        val timeJitterValue = binding.timeJitterEditView.text.toString().toLong()
-                        // 判断是否为数字
-                        if (!timeJitterValue.toString().matches(Regex("[0-9]+"))) {
+                    // 开启时间抖动
+                    R.id.time_jitter_switch -> {
+                        autoSignConfig.isEnableTimeJitter = isChecked
+                        SharePrefHelper.putBoolean(IS_ENABLE_TIME_JITTER, isChecked)
+                        if (isChecked) {
+                            val timeJitterValue =
+                                binding.timeJitterEditView.text.toString().toLong()
+                            // 判断是否为数字
+                            if (!timeJitterValue.toString().matches(Regex("[0-9]+"))) {
+                                Toast.makeText(
+                                    this, "时间抖动值必须为数字", Toast.LENGTH_SHORT
+                                ).show()
+                                binding.timeJitterSwitch.isChecked = false
+                                autoSignConfig.isEnableTimeJitter = false
+                                return@OnCheckedChangeListener
+                            }
+                            SharePrefHelper.putLong(TIME_JITTER_VALUE, timeJitterValue)
                             Toast.makeText(
-                                this, "时间抖动值必须为数字", Toast.LENGTH_SHORT
-                            ).show()
-                            binding.timeJitterSwitch.isChecked = false
-                            autoSignConfig.isEnableTimeJitter = false
-                            return@OnCheckedChangeListener
-                        }
-                        SharePrefHelper.putLong(TIME_JITTER_VALUE, timeJitterValue)
-                        Toast.makeText(
-                            this, "已开启时间抖动，抖动值为$timeJitterValue", Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this, "已关闭时间抖动", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                // 开启自动签到
-                R.id.enable_auto_sign -> {
-                    autoSignConfig.isEnableAutoSign = isChecked;
-                    SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isChecked)
-                    if (isChecked) {
-                        if (autoSignConfig.accessblity) {
-                            SignApplication.getInstance().setFlag(true)
-                            // 早上上班打卡
-                            // morningStartWorkStartTimeStr分割为小时和分钟
-                            morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
-                            val morningStartWorkStartTimeStrArr = morningStartWorkStartTimeStr.split(
-                                ":"
-                            )
-                            AlarManagerUtil.timedTackMonWork(
-                                this,
-                                Integer.valueOf(morningStartWorkStartTimeStrArr[0]),
-                                Integer.valueOf(morningStartWorkStartTimeStrArr[1]),
-                                0
-                            )
-
-                            // 早上下班打卡
-                            morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
-                            val morningOffWorkStartTimeStrArr = morningOffWorkStartTimeStr.split(":")
-                            AlarManagerUtil.timedTackMonOffWork(
-                                this,
-                                Integer.valueOf(morningOffWorkStartTimeStrArr[0]),
-                                Integer.valueOf(morningOffWorkStartTimeStrArr[1]),
-                                1
-                            )
-
-                            // 下午上班打卡
-                            afternoonStartWorkOffStartTimeStr = getAfternoonStartWorkStartTimeStr()
-                            val afternoonStartWorkOffStartTimeStrArr = afternoonStartWorkOffStartTimeStr.split(
-                                ":"
-                            )
-                            AlarManagerUtil.timedTackAfWork(
-                                this,
-                                Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[0]),
-                                Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[1]),
-                                2
-                            )
-
-                            // 下午下班打卡
-                            afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
-                            val afternoonOffWorkOffStartTimeStrArr = afternoonOffWorkOffStartTimeStr.split(
-                                ":"
-                            )
-                            AlarManagerUtil.timedTackAfOffWork(
-                                this,
-                                Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[0]),
-                                Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[1]),
-                                3
-                            )
-
-                            Toast.makeText(
-                                this, "已开启自动打卡", Toast.LENGTH_SHORT
+                                this, "已开启时间抖动，抖动值为$timeJitterValue", Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            // 未开启辅助功能
                             Toast.makeText(
-                                this, "请开启辅助功能", Toast.LENGTH_SHORT
+                                this, "已关闭时间抖动", Toast.LENGTH_SHORT
                             ).show()
-                            this.binding.enableAutoSign.isChecked = false
-                            autoSignConfig.isEnableAutoSign = false
                         }
-                    } else {
-                        AlarManagerUtil.cancelTimetacker(this, true)
-                        SignApplication.getInstance().setFlag(false)
                     }
-                }
 
-                R.id.morning_start_work_switch -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
-                }
+                    // 开启自动签到
+                    R.id.enable_auto_sign -> {
+                        autoSignConfig.isEnableAutoSign = isChecked;
+                        SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isChecked)
+                        if (isChecked) {
+                            if (autoSignConfig.accessblity) {
+                                SignApplication.getInstance().setFlag(true)
+                                // 早上上班打卡
+                                // morningStartWorkStartTimeStr分割为小时和分钟
+                                morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
+                                val morningStartWorkStartTimeStrArr =
+                                    morningStartWorkStartTimeStr.split(
+                                        ":"
+                                    )
+                                AlarManagerUtil.timedTackMonWork(
+                                    this,
+                                    Integer.valueOf(morningStartWorkStartTimeStrArr[0]),
+                                    Integer.valueOf(morningStartWorkStartTimeStrArr[1]),
+                                    0
+                                )
 
-                R.id.morning_off_work_switch -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, isChecked)
-                }
+                                // 早上下班打卡
+                                morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
+                                val morningOffWorkStartTimeStrArr =
+                                    morningOffWorkStartTimeStr.split(":")
+                                AlarManagerUtil.timedTackMonOffWork(
+                                    this,
+                                    Integer.valueOf(morningOffWorkStartTimeStrArr[0]),
+                                    Integer.valueOf(morningOffWorkStartTimeStrArr[1]),
+                                    1
+                                )
 
-                R.id.afternoon_start_work_switch -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK, isChecked)
-                }
+                                // 下午上班打卡
+                                afternoonStartWorkOffStartTimeStr =
+                                    getAfternoonStartWorkStartTimeStr()
+                                val afternoonStartWorkOffStartTimeStrArr =
+                                    afternoonStartWorkOffStartTimeStr.split(
+                                        ":"
+                                    )
+                                AlarManagerUtil.timedTackAfWork(
+                                    this,
+                                    Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[0]),
+                                    Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[1]),
+                                    2
+                                )
 
-                R.id.afternoon_off_work_switch -> {
-                    SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
+                                // 下午下班打卡
+                                afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
+                                val afternoonOffWorkOffStartTimeStrArr =
+                                    afternoonOffWorkOffStartTimeStr.split(
+                                        ":"
+                                    )
+                                AlarManagerUtil.timedTackAfOffWork(
+                                    this,
+                                    Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[0]),
+                                    Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[1]),
+                                    3
+                                )
+
+                                Toast.makeText(
+                                    this, "已开启自动打卡", Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                // 未开启辅助功能
+                                Toast.makeText(
+                                    this, "请开启辅助功能", Toast.LENGTH_SHORT
+                                ).show()
+                                this.binding.enableAutoSign.isChecked = false
+                                autoSignConfig.isEnableAutoSign = false
+                            }
+                        } else {
+                            AlarManagerUtil.cancelTimetacker(this, true)
+                            SignApplication.getInstance().setFlag(false)
+                        }
+                    }
+
+                    R.id.morning_start_work_switch -> {
+                        SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
+                    }
+
+                    R.id.morning_off_work_switch -> {
+                        SharePrefHelper.putBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, isChecked)
+                    }
+
+                    R.id.afternoon_start_work_switch -> {
+                        SharePrefHelper.putBoolean(
+                            IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK,
+                            isChecked
+                        )
+                    }
+
+                    R.id.afternoon_off_work_switch -> {
+                        SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
+                    }
                 }
             }
-        }
         // 修改事件
         binding.morningStartWorkSwitch.setOnCheckedChangeListener(commonOnCheckedChangeListener)
         binding.morningOffWorkSwitch.setOnCheckedChangeListener(commonOnCheckedChangeListener)
