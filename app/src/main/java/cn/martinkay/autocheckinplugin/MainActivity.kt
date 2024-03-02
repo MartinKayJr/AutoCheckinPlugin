@@ -38,6 +38,7 @@ import com.haibin.calendarview.CalendarView
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
+import java.lang.StringBuilder
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -444,55 +445,78 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                                 SignApplication.getInstance().setFlag(true)
                                 // 早上上班打卡
                                 // morningStartWorkStartTimeStr分割为小时和分钟
-                                morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
-                                val morningStartWorkStartTimeStrArr =
-                                    morningStartWorkStartTimeStr.split(
-                                        ":"
+                                // 判断是否勾选开启早上上班自动打卡
+                                val tips = StringBuilder();
+                                if (isMorningStartOpen) {
+                                    morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
+                                    val morningStartWorkStartTimeStrArr =
+                                        morningStartWorkStartTimeStr.split(
+                                            ":"
+                                        )
+                                    AlarManagerUtil.timedTackMonWork(
+                                        this,
+                                        Integer.valueOf(morningStartWorkStartTimeStrArr[0]),
+                                        Integer.valueOf(morningStartWorkStartTimeStrArr[1]),
+                                        0
                                     )
-                                AlarManagerUtil.timedTackMonWork(
-                                    this,
-                                    Integer.valueOf(morningStartWorkStartTimeStrArr[0]),
-                                    Integer.valueOf(morningStartWorkStartTimeStrArr[1]),
-                                    0
-                                )
+                                    tips.append("开启A,")
+                                } else {
+                                    tips.append("关闭A,")
+                                }
 
                                 // 早上下班打卡
-                                morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
-                                val morningOffWorkStartTimeStrArr =
-                                    morningOffWorkStartTimeStr.split(":")
-                                AlarManagerUtil.timedTackMonOffWork(
-                                    this,
-                                    Integer.valueOf(morningOffWorkStartTimeStrArr[0]),
-                                    Integer.valueOf(morningOffWorkStartTimeStrArr[1]),
-                                    1
-                                )
+                                if (isMorningOffOpen) {
+                                    morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
+                                    val morningOffWorkStartTimeStrArr =
+                                        morningOffWorkStartTimeStr.split(":")
+                                    AlarManagerUtil.timedTackMonOffWork(
+                                        this,
+                                        Integer.valueOf(morningOffWorkStartTimeStrArr[0]),
+                                        Integer.valueOf(morningOffWorkStartTimeStrArr[1]),
+                                        1
+                                    )
+                                    tips.append("开启B,")
+                                } else {
+                                    tips.append("关闭B,")
+                                }
 
                                 // 下午上班打卡
-                                afternoonStartWorkOffStartTimeStr =
-                                    getAfternoonStartWorkStartTimeStr()
-                                val afternoonStartWorkOffStartTimeStrArr =
-                                    afternoonStartWorkOffStartTimeStr.split(
-                                        ":"
+                                if (isAfternoonStartOpen) {
+                                    afternoonStartWorkOffStartTimeStr =
+                                        getAfternoonStartWorkStartTimeStr()
+                                    val afternoonStartWorkOffStartTimeStrArr =
+                                        afternoonStartWorkOffStartTimeStr.split(
+                                            ":"
+                                        )
+                                    AlarManagerUtil.timedTackAfWork(
+                                        this,
+                                        Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[0]),
+                                        Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[1]),
+                                        2
                                     )
-                                AlarManagerUtil.timedTackAfWork(
-                                    this,
-                                    Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[0]),
-                                    Integer.valueOf(afternoonStartWorkOffStartTimeStrArr[1]),
-                                    2
-                                )
+                                    tips.append("开启C,")
+                                } else {
+                                    tips.append("关闭C,")
+                                }
 
                                 // 下午下班打卡
-                                afternoonOffWorkOffStartTimeStr = getAfternoonOffWorkStartTimeStr()
-                                val afternoonOffWorkOffStartTimeStrArr =
-                                    afternoonOffWorkOffStartTimeStr.split(
-                                        ":"
+                                if (isAfternoonOffOpen) {
+                                    afternoonOffWorkOffStartTimeStr =
+                                        getAfternoonOffWorkStartTimeStr()
+                                    val afternoonOffWorkOffStartTimeStrArr =
+                                        afternoonOffWorkOffStartTimeStr.split(
+                                            ":"
+                                        )
+                                    AlarManagerUtil.timedTackAfOffWork(
+                                        this,
+                                        Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[0]),
+                                        Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[1]),
+                                        3
                                     )
-                                AlarManagerUtil.timedTackAfOffWork(
-                                    this,
-                                    Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[0]),
-                                    Integer.valueOf(afternoonOffWorkOffStartTimeStrArr[1]),
-                                    3
-                                )
+                                    tips.append("开启D")
+                                } else {
+                                    tips.append("关闭D")
+                                }
 
                                 Toast.makeText(
                                     this, "已开启自动打卡", Toast.LENGTH_SHORT
@@ -513,10 +537,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
                     R.id.morning_start_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
+                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.morning_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, isChecked)
+                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.afternoon_start_work_switch -> {
@@ -524,10 +550,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK,
                             isChecked
                         )
+                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.afternoon_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
+                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
