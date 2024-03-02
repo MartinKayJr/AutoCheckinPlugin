@@ -37,8 +37,13 @@ class AlarmReceiver : BroadcastReceiver() {
             intent2.flags = (Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             context.startActivity(intent2)
             // 3. 打开企业微信
+            // 今天是否开启
             val autoSignAllowed = AutoSignPermissionUtils.isTodayAutoSignAllowed()
-            if (autoSignAllowed) {
+            // 当前时间段是否开启
+            val enableCurrentTimePeriod =
+                AutoSignPermissionUtils.isEnableCurrentTimePeriod(requestCode)
+            // 今天和时间段都开启，才执行
+            if (autoSignAllowed && enableCurrentTimePeriod) {
                 Log.i("ContentValues", "今天是要打卡的星期")
                 val launchIntentForPackage = context.packageManager.getLaunchIntentForPackage(
                     Constant.getActiveApp().packageName

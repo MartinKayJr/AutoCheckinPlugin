@@ -1,6 +1,10 @@
 package cn.martinkay.autocheckinplugin.utils
 
 import android.util.Log
+import cn.martinkay.autocheckinplugin.IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK
+import cn.martinkay.autocheckinplugin.IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK
+import cn.martinkay.autocheckinplugin.IS_OPEN_MORNING_OFF_WORK_SIGN_TASK
+import cn.martinkay.autocheckinplugin.IS_OPEN_MORNING_START_WORK_SIGN_TASK
 import cn.martinkay.autocheckinplugin.SIGN_CALENDAR_SCHEME_CACHE
 import cn.martinkay.autocheckinplugin.SIGN_OPEN_INTENT_START_TIME
 import cn.martinkay.autocheckinplugin.SharePrefHelper
@@ -73,4 +77,47 @@ object AutoSignPermissionUtils {
         }
         return true
     }
+
+    fun isEnableCurrentTimePeriod(requestCode: Int): Boolean {
+        when (requestCode) {
+            0 -> {
+                // 早上上班打卡
+                val isMorningStartOpen = SharePrefHelper.getBoolean(
+                    IS_OPEN_MORNING_START_WORK_SIGN_TASK, false
+                )
+                Log.i("ContentValues", "早上上班打卡状态：$isMorningStartOpen")
+                return isMorningStartOpen
+            }
+
+            1 -> {
+                // 早上下班打卡
+                val isMorningOffOpen = SharePrefHelper.getBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, false)
+                Log.i("ContentValues", "早上下班打卡状态：$isMorningOffOpen")
+                return isMorningOffOpen
+            }
+
+            2 -> {
+                // 下午上班打卡
+                val isAfternoonStartOpen = SharePrefHelper.getBoolean(
+                    IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK, false
+                )
+                Log.i("ContentValues", "下午上班打卡状态：$isAfternoonStartOpen")
+                return isAfternoonStartOpen
+            }
+
+            3 -> {
+                // 下午下班打卡
+                val isAfternoonOffOpen = SharePrefHelper.getBoolean(
+                    IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, false
+                )
+                Log.i("ContentValues", "下午下班打卡状态：$isAfternoonOffOpen")
+                return isAfternoonOffOpen
+            }
+
+            else -> {
+                return false
+            }
+        }
+    }
+
 }

@@ -537,12 +537,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
                     R.id.morning_start_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.morning_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.afternoon_start_work_switch -> {
@@ -550,12 +550,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK,
                             isChecked
                         )
-                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
                     }
 
                     R.id.afternoon_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
