@@ -209,7 +209,28 @@ public class MyAccessibilityService extends AccessibilityService {
     }
 
     public Boolean clickHomeKey() {
-        return Boolean.valueOf(performGlobalAction(2));
+        if (Constant.isRoot) {
+            try {
+                if (Shell.su("input keyevent 3").exec().isSuccess()) {
+                    Log.i("MyAccessibilityService", "点击Home键成功");
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (Constant.isShizuku) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                boolean homeKey = HShizuku.INSTANCE.clickHome();
+                if (homeKey) {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder点击Home键成功");
+                    return true;
+                } else {
+                    Log.i("MyAccessibilityService", "Shizuku ibinder点击Home键失败");
+                    return false;
+                }
+            }
+        }
+        return Boolean.valueOf(performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME));
     }
 
     /**

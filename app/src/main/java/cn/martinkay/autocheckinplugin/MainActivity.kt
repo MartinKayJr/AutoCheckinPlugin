@@ -35,10 +35,10 @@ import cn.martinkay.autocheckinplugin.utils.JumpPermissionManagement
 import com.alibaba.fastjson.JSON
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.CalendarView
+import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
-import java.lang.StringBuilder
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -442,12 +442,29 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                         SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isChecked)
                         if (isChecked) {
                             if (autoSignConfig.accessblity) {
+                                // 早上上班打卡
+                                val isMorningStartOpenCondition = SharePrefHelper.getBoolean(
+                                    IS_OPEN_MORNING_START_WORK_SIGN_TASK, false
+                                )
+                                // 早上下班打卡
+                                val isMorningOffOpenCondition = SharePrefHelper.getBoolean(
+                                    IS_OPEN_MORNING_OFF_WORK_SIGN_TASK,
+                                    false
+                                )
+                                // 下午上班打卡
+                                val isAfternoonStartOpenCondition = SharePrefHelper.getBoolean(
+                                    IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK, false
+                                )
+                                // 下午下班打卡
+                                val isAfternoonOffOpenCondition = SharePrefHelper.getBoolean(
+                                    IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, false
+                                )
                                 SignApplication.getInstance().setFlag(true)
                                 // 早上上班打卡
                                 // morningStartWorkStartTimeStr分割为小时和分钟
                                 // 判断是否勾选开启早上上班自动打卡
                                 val tips = StringBuilder();
-                                if (isMorningStartOpen) {
+                                if (isMorningStartOpenCondition) {
                                     morningStartWorkStartTimeStr = getMorningStartWorkStartTimeStr()
                                     val morningStartWorkStartTimeStrArr =
                                         morningStartWorkStartTimeStr.split(
@@ -465,7 +482,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                                 }
 
                                 // 早上下班打卡
-                                if (isMorningOffOpen) {
+                                if (isMorningOffOpenCondition) {
                                     morningOffWorkStartTimeStr = getMorningOffWorkStartTimeStr()
                                     val morningOffWorkStartTimeStrArr =
                                         morningOffWorkStartTimeStr.split(":")
@@ -481,7 +498,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                                 }
 
                                 // 下午上班打卡
-                                if (isAfternoonStartOpen) {
+                                if (isAfternoonStartOpenCondition) {
                                     afternoonStartWorkOffStartTimeStr =
                                         getAfternoonStartWorkStartTimeStr()
                                     val afternoonStartWorkOffStartTimeStrArr =
@@ -500,7 +517,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                                 }
 
                                 // 下午下班打卡
-                                if (isAfternoonOffOpen) {
+                                if (isAfternoonOffOpenCondition) {
                                     afternoonOffWorkOffStartTimeStr =
                                         getAfternoonOffWorkStartTimeStr()
                                     val afternoonOffWorkOffStartTimeStrArr =
@@ -519,7 +536,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                                 }
 
                                 Toast.makeText(
-                                    this, "已开启自动打卡", Toast.LENGTH_SHORT
+                                    this, "已开启自动打卡：$tips", Toast.LENGTH_SHORT
                                 ).show()
                             } else {
                                 // 未开启辅助功能
@@ -537,12 +554,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
                     R.id.morning_start_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_START_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "修改后注意重新开启，当前状态$isChecked",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     R.id.morning_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_MORNING_OFF_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "修改后注意重新开启，当前状态$isChecked",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     R.id.afternoon_start_work_switch -> {
@@ -550,12 +575,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK,
                             isChecked
                         )
-                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "修改后注意重新开启，当前状态$isChecked",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     R.id.afternoon_off_work_switch -> {
                         SharePrefHelper.putBoolean(IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK, isChecked)
-                        Toast.makeText(this, "修改后注意重新开启，当前状态$isChecked", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "修改后注意重新开启，当前状态$isChecked",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
@@ -578,6 +611,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             R.id.test_close_app_btn -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     HShizuku.forceStopApp("com.tencent.wework")
+                }
+            }
+
+            R.id.test_home_app_btn -> {
+                // root执行 adb shell input keyevent 3
+                if (Shell.su("input keyevent 3").exec().isSuccess) {
+                    Log.i("MyAccessibilityService", "点击Home键成功")
                 }
             }
 

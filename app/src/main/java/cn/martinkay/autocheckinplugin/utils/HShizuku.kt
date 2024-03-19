@@ -87,6 +87,27 @@ object HShizuku {
         false
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun clickHome() = runCatching {
+        val input = asInterface("android.hardware.input.IInputManager", "input")
+        val inject = input::class.java.getMethod(
+            "injectInputEvent", InputEvent::class.java, Int::class.java
+        )
+        val now = SystemClock.uptimeMillis()
+        inject.invoke(
+            input, KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_HOME, 0), 0
+        )
+        inject.invoke(
+            input, KeyEvent(now, now, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME, 0), 0
+        )
+        true
+    }.getOrElse {
+        HLog.e(it)
+        false
+    }
+
+
+
     fun execute(command: String, root: Boolean = isRoot): Pair<Int, String> = runCatching {
         IShizukuService.Stub.asInterface(Shizuku.getBinder())
             .newProcess(arrayOf(if (root) "su" else "sh"), null, null).run {

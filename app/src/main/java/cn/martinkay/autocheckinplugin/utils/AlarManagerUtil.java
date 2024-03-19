@@ -1,5 +1,8 @@
 package cn.martinkay.autocheckinplugin.utils;
 
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_ENABLE_TIME_JITTER;
+import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.TIME_JITTER_VALUE;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,12 +10,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
-import cn.martinkay.autocheckinplugin.SharePrefHelper;
+
 import java.util.Calendar;
 import java.util.Random;
 
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.IS_ENABLE_TIME_JITTER;
-import static cn.martinkay.autocheckinplugin.SharePrefHelperKt.TIME_JITTER_VALUE;
+import cn.martinkay.autocheckinplugin.SharePrefHelper;
 
 public class AlarManagerUtil {
     private static Context activityA;
@@ -72,7 +74,7 @@ public class AlarManagerUtil {
     }
 
     public static void timedTackMonOffWork(Context activity, int hour, int minute,
-            int requestCode) {
+                                           int requestCode) {
         activityA = activity;
         alarmManager = (AlarmManager) activity.getSystemService(Context.ALARM_SERVICE);
 
@@ -210,12 +212,36 @@ public class AlarManagerUtil {
     public static void cancelTimetacker(Context context, boolean showMsg) {
         try {
             activityA = context;
-            alarmManager.cancel(pendingIntentMonWork);
-            alarmManager.cancel(pendingIntentMonOffWork);
-            alarmManager.cancel(pendingIntentAfWork);
-            alarmManager.cancel(pendingIntentAfOffWork);
+            if (alarmManager == null) {
+                alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            }
+            StringBuilder sb = new StringBuilder();
+            if (pendingIntentMonWork != null) {
+                alarmManager.cancel(pendingIntentMonWork);
+                sb.append("A✔");
+            } else {
+                sb.append("A❌");
+            }
+            if (pendingIntentMonOffWork != null) {
+                alarmManager.cancel(pendingIntentMonOffWork);
+                sb.append("B✔");
+            } else {
+                sb.append("B❌");
+            }
+            if (pendingIntentAfWork != null) {
+                alarmManager.cancel(pendingIntentAfWork);
+                sb.append("C✔");
+            } else {
+                sb.append("C❌");
+            }
+            if (pendingIntentAfOffWork != null) {
+                alarmManager.cancel(pendingIntentAfOffWork);
+                sb.append("D✔");
+            } else {
+                sb.append("D❌");
+            }
             if (showMsg) {
-                Toast.makeText(activityA, "自动签到已关闭", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activityA, "自动签到已关闭：" + sb.toString(), Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
