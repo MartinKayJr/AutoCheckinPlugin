@@ -6,4 +6,8 @@
     <string name="msg_yesno_def_message">你确定吗?</string>
     <string name="acc_desc">打开开关，自动帮你打卡</string>
     <string name="accessibility_service_description">该服务用于自动签到</string>
+    <string name="action_settings">设置</string>
+    <string name="compatible_config">兼容配置</string>
+    <string name="smart_recognition_jump">智能识别跳转(用于判断当前跳转是人为打开还是自动打开，来决定是否要自动操作，防止与人抢屏幕)</string>
+    <string name="settings_save">保存</string>
 </resources>

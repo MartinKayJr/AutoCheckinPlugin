@@ -1,6 +1,7 @@
 package cn.martinkay.autocheckinplugin.utils
 
 import android.util.Log
+import cn.martinkay.autocheckinplugin.ENABLE_SMART_RECOGNITION_JUMP
 import cn.martinkay.autocheckinplugin.IS_OPEN_AFTERNOON_OFF_WORK_SIGN_TASK
 import cn.martinkay.autocheckinplugin.IS_OPEN_AFTERNOON_START_WORK_SIGN_TASK
 import cn.martinkay.autocheckinplugin.IS_OPEN_MORNING_OFF_WORK_SIGN_TASK
@@ -70,6 +71,13 @@ object AutoSignPermissionUtils {
     }
 
     fun isMobileAutoSignLaunch(): Boolean {
+        // 判断是否开启智能识别跳转 如果关闭则直接返回true
+        val enableSmartRecognitionJump = SharePrefHelper.getBoolean(
+            ENABLE_SMART_RECOGNITION_JUMP, false
+        )
+        if (!enableSmartRecognitionJump) {
+            return true
+        }
         val startTime = SharePrefHelper.getLong(SIGN_OPEN_INTENT_START_TIME, 0)
         if (System.currentTimeMillis() - startTime > 5000) {
             Log.i("CompleteProcessor", "不是由程序打开的，忽略")

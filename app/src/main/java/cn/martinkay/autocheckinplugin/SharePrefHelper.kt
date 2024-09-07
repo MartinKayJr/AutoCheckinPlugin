@@ -32,6 +32,8 @@ const val SIGN_CALENDAR_SCHEME_CACHE = "sign_calendar_scheme_cache"
 
 const val VERSION_UPDATE_FLAG = "version_update_flag"
 
+const val ENABLE_SMART_RECOGNITION_JUMP = "enable_smart_recognition_jump"
+
 object SharePrefHelper {
 
     private var mShare: SharedPreferences? = null

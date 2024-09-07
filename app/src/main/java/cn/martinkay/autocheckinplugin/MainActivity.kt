@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -12,8 +14,13 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CompoundButton
+import android.widget.Switch
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
@@ -94,6 +101,51 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         initShizuku()
         isIgnoreBatteryOption(this)
         lockWifiService()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val enableSmartRecognitionJump: Boolean =
+            SharePrefHelper.getBoolean(ENABLE_SMART_RECOGNITION_JUMP, false)
+
+        when (item.itemId) {
+            R.id.action_settings -> {
+                val inflate = layoutInflater.inflate(R.layout.setting_dialog, null as ViewGroup?)
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("设置")
+
+                // 显示Toast
+                val enableSmartRecognitionJumpSwitch =
+                    inflate.findViewById<Switch>(R.id.smart_recognition_jump)
+                enableSmartRecognitionJumpSwitch.isChecked = enableSmartRecognitionJump
+                enableSmartRecognitionJumpSwitch.setOnClickListener {
+                    SharePrefHelper.putBoolean(
+                        ENABLE_SMART_RECOGNITION_JUMP,
+                        enableSmartRecognitionJumpSwitch.isChecked
+                    )
+                    Toast.makeText(
+                        this,
+                        "已${if (enableSmartRecognitionJumpSwitch.isChecked) "开启" else "关闭"}智能识别跳转",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                val saveBtn = inflate.findViewById<Button>(R.id.setting_save)
+                saveBtn.setOnClickListener {
+
+                }
+
+                builder.setView(inflate)
+                    .setPositiveButton("完成", null as DialogInterface.OnClickListener?).create()
+                    .show()
+            }
+            R.id.compatible_config -> {
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun initViewModel() {
