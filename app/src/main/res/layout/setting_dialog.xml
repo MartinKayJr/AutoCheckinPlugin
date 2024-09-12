@@ -13,6 +13,13 @@
         android:text="@string/smart_recognition_jump"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
+    <Switch
+        android:id="@+id/start_quick_sign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/start_quick_sign"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     <Button
         android:id="@+id/setting_save"
         android:layout_width="match_parent"

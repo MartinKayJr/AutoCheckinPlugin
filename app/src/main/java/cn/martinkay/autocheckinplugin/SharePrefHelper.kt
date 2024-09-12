@@ -34,6 +34,8 @@ const val VERSION_UPDATE_FLAG = "version_update_flag"
 
 const val ENABLE_SMART_RECOGNITION_JUMP = "enable_smart_recognition_jump"
 
+const val ENABLE_START_QUICK_SIGN = "enable_start_quick_sign"
+
 object SharePrefHelper {
 
     private var mShare: SharedPreferences? = null

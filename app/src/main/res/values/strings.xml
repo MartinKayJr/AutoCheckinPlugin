@@ -10,4 +10,5 @@
     <string name="compatible_config">兼容配置</string>
     <string name="smart_recognition_jump">智能识别跳转(用于判断当前跳转是人为打开还是自动打开，来决定是否要自动操作，防止与人抢屏幕)</string>
     <string name="settings_save">保存</string>
+    <string name="start_quick_sign">兼容快捷打卡(启动企业微信就自动打卡-此功能需要企业管理员开启)</string>
 </resources>

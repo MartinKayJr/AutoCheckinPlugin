@@ -6,7 +6,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -43,9 +42,13 @@ import com.alibaba.fastjson.JSON
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.CalendarView
 import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import rikka.shizuku.Shizuku.OnRequestPermissionResultListener
+import java.net.URL
 
 @SuppressLint("SetTextI18n")
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -111,6 +114,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val enableSmartRecognitionJump: Boolean =
             SharePrefHelper.getBoolean(ENABLE_SMART_RECOGNITION_JUMP, false)
+        val enableStartQuickSign: Boolean =
+            SharePrefHelper.getBoolean(ENABLE_START_QUICK_SIGN, false)
 
         when (item.itemId) {
             R.id.action_settings -> {
@@ -118,7 +123,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle("设置")
 
-                // 显示Toast
+                // 开启智能识别跳转
                 val enableSmartRecognitionJumpSwitch =
                     inflate.findViewById<Switch>(R.id.smart_recognition_jump)
                 enableSmartRecognitionJumpSwitch.isChecked = enableSmartRecognitionJump
@@ -133,6 +138,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                val enableStartQuickSignSwitch =
+                    inflate.findViewById<Switch>(R.id.start_quick_sign)
+                enableStartQuickSignSwitch.isChecked = enableStartQuickSign
+                enableStartQuickSignSwitch.setOnClickListener {
+                    SharePrefHelper.putBoolean(
+                        ENABLE_START_QUICK_SIGN,
+                        enableStartQuickSignSwitch.isChecked
+                    )
+                    Toast.makeText(
+                        this,
+                        "已${if (enableStartQuickSignSwitch.isChecked) "开启" else "关闭"}兼容快捷打卡",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
                 val saveBtn = inflate.findViewById<Button>(R.id.setting_save)
                 saveBtn.setOnClickListener {
 
@@ -142,6 +163,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     .setPositiveButton("完成", null as DialogInterface.OnClickListener?).create()
                     .show()
             }
+
             R.id.compatible_config -> {
             }
         }
@@ -490,6 +512,41 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
                     // 开启自动签到
                     R.id.enable_auto_sign -> {
+
+                        // 检测系统时间和网络时间是否误差过大
+                        // NetworkOnMainThreadException
+
+                        val url = URL("https://www.baidu.com")
+
+                        GlobalScope.launch(Dispatchers.IO) {
+                            val uc = url.openConnection()
+                            uc.connect()
+                            val ld = uc.date
+                            val systemTime = System.currentTimeMillis()
+                            val timeJitter = ld - systemTime
+                            // 这里应该取绝对值
+                            val abs = Math.abs(timeJitter)
+                            if (abs > 1000 * 60 * 5) {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "系统时间和网络时间误差过大，请校准时间",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    binding.enableAutoSign.isChecked = false
+                                    autoSignConfig.isEnableAutoSign = false
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "系统时间和网络时间误差正常",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+
                         autoSignConfig.isEnableAutoSign = isChecked;
                         SharePrefHelper.putBoolean(IS_ENABLE_AUTO_SIGN, isChecked)
                         if (isChecked) {
