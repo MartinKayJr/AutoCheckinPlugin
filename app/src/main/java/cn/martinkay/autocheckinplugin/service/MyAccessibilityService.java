@@ -62,7 +62,7 @@ public class MyAccessibilityService extends AccessibilityService {
             Notification notification = new Notification.Builder(this, "im_channel_id")
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setWhen(System.currentTimeMillis())
-                    .setContentText("自动签到服务正在运行")
+                    .setContentText("Auto服务正在运行")
                     .setContentIntent(pendingIntent)
                     .setWhen(System.currentTimeMillis())
                     .build();
@@ -114,7 +114,7 @@ public class MyAccessibilityService extends AccessibilityService {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "")
-                .setContentTitle("自动签到服务运行于前台")
+                .setContentTitle("Auto服务运行于前台")
                 .setContentText("service被设为前台进程")
                 .setTicker("service正在后台运行...")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
