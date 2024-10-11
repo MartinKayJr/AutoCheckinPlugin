@@ -19,4 +19,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "AutoCheckinPlugin"
 include(":app")
- 
+include(":smart:detect")
+include(":randompkg")

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="cn.martinkay.autocheckinplugin">
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -27,7 +28,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
-        android:name=".SignApplication"
+        android:name="cn.martinkay.checkin.SignApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -38,7 +39,7 @@
         android:theme="@style/Theme.AutoCheckinPlugin"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="cn.martinkay.checkin.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,12 +49,12 @@
         </activity>
 
         <service
-            android:name=".service.AssistService"
+            android:name="cn.martinkay.checkin.service.AssistService"
             android:priority="1000" />
 
 
         <receiver
-            android:name=".broad.AlarmReceiver"
+            android:name="cn.martinkay.checkin.broad.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -62,7 +63,7 @@
         </receiver>
 
         <service
-            android:name=".service.MyAccessibilityService"
+            android:name="cn.martinkay.checkin.service.MyAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="自动签到"
@@ -76,7 +77,7 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
-        <service android:name=".service.WifiLockService"
+        <service android:name="cn.martinkay.checkin.service.WifiLockService"
             android:enabled="true"
             android:exported="true"
             android:label="WIFI状态锁"
@@ -91,18 +92,6 @@
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
-        <!--        <service-->
-        <!--            android:name=".service.SignService"-->
-        <!--            android:label="@string/app_name"-->
-        <!--            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"-->
-        <!--            android:exported="true">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.accessibilityservice.AccessibilityService" />-->
-        <!--            </intent-filter>-->
-        <!--            <meta-data-->
-        <!--                android:name="android.accessibilityservice"-->
-        <!--                android:resource="@xml/acc_service" />-->
-        <!--        </service>-->
     </application>
 
     <!--  Android 11以上权限限制，加入这个才能取到launchIntent  -->

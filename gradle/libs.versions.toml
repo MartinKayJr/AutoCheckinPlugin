@@ -1,12 +1,12 @@
 [versions]
-agp = "8.1.0"
+agp = "8.1.4"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 appcompat = "1.6.1"
 material = "1.9.0"
 constraintlayout = "2.1.4"
-org-jetbrains-kotlin-android = "1.8.10"
+org-jetbrains-kotlin-android = "1.9.23"
 core-ktx = "1.9.0"
 lifecycle-runtime-ktx = "2.6.1"
 kotlinx-coroutines = "1.7.3"
@@ -35,9 +35,12 @@ shizuku-api = { module = "dev.rikka.shizuku:api", version = "13.1.5" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version = "13.1.5" }
 
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
+
+bouncycastle = { module = "org.bouncycastle:bcpkix-jdk15on", version = "1.70" }
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 
 [bundles]
 

@@ -8,6 +8,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/random_pkg_config"
+        android:orderInCategory="100"
+        android:title="@string/random_pkg_config"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/compatible_config"
         android:orderInCategory="100"
         android:title="@string/compatible_config"
