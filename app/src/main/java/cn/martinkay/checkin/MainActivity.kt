@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 randomPkgBtn.setOnClickListener {
                     // 判断是否root，没root无法生成随机
-                    if (Constant.isRoot) {
+                    if (Constant.isRoot || Constant.isShizuku) {
                         GlobalScope.launch {
                             HideAPK.hide(
                                 this@MainActivity,

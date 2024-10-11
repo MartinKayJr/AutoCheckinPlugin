@@ -1,16 +1,25 @@
 package cn.martinkay.randompkg.hide
 
+import android.Manifest
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.net.Uri
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import cn.martinkay.randompkg.signing.JarMap
 import cn.martinkay.randompkg.signing.SignApk
 import cn.martinkay.randompkg.utils.AXML
 import cn.martinkay.randompkg.utils.Constant
 import cn.martinkay.randompkg.utils.Keygen
 import cn.martinkay.randompkg.utils.ShellUtils
+import cn.martinkay.randompkg.utils.ShizukuUtil
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.UiThreadHandler
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +29,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.security.SecureRandom
+
 
 object HideAPK {
 
@@ -148,9 +158,17 @@ object HideAPK {
         } else {
             getEnv(activity)
             if (Constant.shizukuIsRun && Constant.shizukuIsAccept) {
+                val installApkResult = ShizukuUtil.installApk(repack.absolutePath)
+                UiThreadHandler.run {
+                    Toast.makeText(
+                        activity,
+                        "随机包名Shizuku安装返回:${installApkResult}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
                 return true
             }
-            return false
+            return customInstaller(repack.absolutePath, activity, pkg)
         }
     }
 
@@ -167,4 +185,58 @@ object HideAPK {
         if (!success) onFailure.run()
     }
 
+
+    //安装App
+    fun customInstaller(appPath: String, activity: Activity, packageName: String): Boolean {
+        try {
+            val intent = Intent(Intent.ACTION_DEFAULT)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            //分屏
+            //intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+            val apkUri: Uri = FileProvider.getUriForFile(
+                activity.applicationContext,
+                packageName,
+                File(appPath)
+            )
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive")
+
+            //默认系统安装器
+            val apkInstall: String = packageName
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val canRequestPackageInstalls =
+                    activity.packageManager.canRequestPackageInstalls()
+                if (!canRequestPackageInstalls) {
+                    ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.REQUEST_INSTALL_PACKAGES), 666)
+                }
+            }
+
+
+            val queryIntentActivities: List<ResolveInfo> =
+                activity.packageManager
+                    .queryIntentActivities(intent, 0)
+            if (queryIntentActivities.isNotEmpty()) {
+                for (resolveInfo in queryIntentActivities) {
+                    val activityInfo = resolveInfo.activityInfo
+                    if (apkInstall == activityInfo.applicationInfo.packageName) {
+                        intent.setComponent(
+                            ComponentName(
+                                activityInfo.applicationInfo.packageName,
+                                activityInfo.name
+                            )
+                        )
+                        break
+                    }
+                }
+            }
+            activity.startActivity(intent)
+
+            Log.d("HandleEventInstalApp", intent.toString())
+            return true
+        } catch (th: Throwable) {
+            throw Error(th)
+        }
+        return false
+    }
 }
