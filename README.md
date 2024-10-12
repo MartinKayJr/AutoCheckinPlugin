@@ -10,6 +10,7 @@
 ## 预览
 ![预览](img/preview.jpg)
 ![预览2](img/preview2.jpg)
+![预览3](img/preview3.jpg)
 
 ## ROOT优化
 - [x] 优化无障碍服务，root情况下，不需要每次都开启无障碍服务
