@@ -19,7 +19,6 @@ import cn.martinkay.randompkg.utils.AXML
 import cn.martinkay.randompkg.utils.Constant
 import cn.martinkay.randompkg.utils.Keygen
 import cn.martinkay.randompkg.utils.ShellUtils
-import cn.martinkay.randompkg.utils.ShizukuUtil
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.internal.UiThreadHandler
 import kotlinx.coroutines.Dispatchers
@@ -156,18 +155,18 @@ object HideAPK {
                 return false
             }
         } else {
-            getEnv(activity)
-            if (Constant.shizukuIsRun && Constant.shizukuIsAccept) {
-                val installApkResult = ShizukuUtil.installApk(repack.absolutePath)
-                UiThreadHandler.run {
-                    Toast.makeText(
-                        activity,
-                        "随机包名Shizuku安装返回:${installApkResult}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                return true
-            }
+//            getEnv(activity)
+//            if (Constant.shizukuIsRun && Constant.shizukuIsAccept) {
+//                val installApkResult = ShizukuUtil.installApk(repack.absolutePath)
+//                UiThreadHandler.run {
+//                    Toast.makeText(
+//                        activity,
+//                        "随机包名Shizuku安装返回:${installApkResult}",
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//                return true
+//            }
             return customInstaller(repack.absolutePath, activity, pkg)
         }
     }
@@ -193,9 +192,10 @@ object HideAPK {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             //分屏
             //intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+            Constant.pkg = activity.packageName
             val apkUri: Uri = FileProvider.getUriForFile(
                 activity.applicationContext,
-                packageName,
+                "${Constant.pkg}.fileProvider",
                 File(appPath)
             )
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

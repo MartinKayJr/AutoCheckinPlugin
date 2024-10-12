@@ -37,3 +37,9 @@ adb shell settings put secure enabled_accessibility_services cn.martinkay.autoch
 ```shell
 adb shell settings put secure accessibility_enabled 1
 ```
+
+
+## 构建
+Shizuku使用Android中的隐藏api。为了避免反射，使用一个特殊的SDK JAR来直接访问这些api。要成功构建，您需要从[这里](https://github.com/Reginer/aosp-android-jar)获取Android 14 (API 34) JAR，并按照说明安装它。
+
+

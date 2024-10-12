@@ -8,4 +8,6 @@ object Constant {
     var shizukuIsAccept: Boolean = false
 
     var isShizuku: Boolean = false
+
+    var pkg: String = "cn.martinkay.autocheckinplugin"
 }

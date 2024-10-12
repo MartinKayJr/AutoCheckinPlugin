@@ -196,17 +196,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
                 randomPkgBtn.setOnClickListener {
                     // 判断是否root，没root无法生成随机
-                    if (Constant.isRoot || Constant.isShizuku) {
-                        GlobalScope.launch {
-                            HideAPK.hide(
-                                this@MainActivity,
-                                "RAutoCheckinPlugin",
-                                applicationInfo.sourceDir,
-                                BuildConfig.APPLICATION_ID
-                            )
-                        }
-                    } else {
-                        Toast.makeText(this@MainActivity, "请root或激活shizuku后生成随机包名", Toast.LENGTH_LONG).show()
+                    GlobalScope.launch {
+                        HideAPK.hide(
+                            this@MainActivity,
+                            "RAutoCheckinPlugin",
+                            applicationInfo.sourceDir,
+                            BuildConfig.APPLICATION_ID
+                        )
                     }
                 }
 
