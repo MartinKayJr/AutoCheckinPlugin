@@ -506,7 +506,7 @@
                             app:day_text_size="14sp"
                             app:max_year="2025"
                             app:min_year="2004"
-                            app:month_view="cn.martinkay.autocheckinplugin.calendarview.ProgressMonthView"
+                            app:month_view="cn.martinkay.checkin.calendarview.ProgressMonthView"
                             app:month_view_show_mode="mode_fix"
                             app:other_month_lunar_text_color="#e1e1e1"
                             app:other_month_text_color="#e1e1e1"
