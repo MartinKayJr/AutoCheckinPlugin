@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun isOpenService() {
         if (!IsServiceRunningUtil.isAccessibilitySettingsOn(
-                this, "cn.martinkay.autocheckinplugin.service.MyAccessibilityService"
+                this, "cn.martinkay.checkin.service.MyAccessibilityService"
             )
         ) {
             binding.accessbilitySwitch.isChecked = false

@@ -30,12 +30,12 @@
 
 ### ROOT权限或Shizuku下开启无障碍服务
 ```shell
-# 获取无障碍服务列表 拿到cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService
+# 获取无障碍服务列表 拿到cn.martinkay.autocheckinplugin/cn.martinkay.checkin.service.MyAccessibilityService
 adb shell settings get secure enabled_accessibility_services
 ```
 
 ```shell
-adb shell settings put secure enabled_accessibility_services cn.martinkay.autocheckinplugin/cn.martinkay.autocheckinplugin.service.MyAccessibilityService
+adb shell settings put secure enabled_accessibility_services cn.martinkay.autocheckinplugin/cn.martinkay.checkin.service.MyAccessibilityService
 ```
 
 ```shell

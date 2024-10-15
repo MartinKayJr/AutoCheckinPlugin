@@ -186,7 +186,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 cmds.add("settings get secure enabled_accessibility_services")
                 val result = ShellUtils.execCommand(cmds, true, true)
                 // 注意：如果开启了多个辅助功能，这里的successMsg会有多个，所以不能用equals，而是用contains
-                if ((Constant.pkg + "/cn.martinkay.autocheckinplugin.service.MyAccessibilityService").contains(
+                if ((Constant.pkg + "/cn.martinkay.checkin.service.MyAccessibilityService").contains(
                         result.successMsg
                     )
                 ) {
@@ -208,7 +208,7 @@ class AlarmReceiver : BroadcastReceiver() {
             Log.i(
                 "AlarmReceiver", "isAccessibilityByShizuku: $first--$second"
             )
-            if ((Constant.pkg + "/cn.martinkay.autocheckinplugin.service.MyAccessibilityService").contains(
+            if ((Constant.pkg + "/cn.martinkay.checkin.service.MyAccessibilityService").contains(
                     second
                 )
             ) {
@@ -223,7 +223,7 @@ class AlarmReceiver : BroadcastReceiver() {
         fun enableAccessibility(): Int {
             val cmds: MutableList<String> = ArrayList()
             cmds.add(
-                "settings put secure enabled_accessibility_services " + Constant.pkg + "/cn.martinkay.autocheckinplugin.service.MyAccessibilityService\n"
+                "settings put secure enabled_accessibility_services " + Constant.pkg + "/cn.martinkay.checkin.service.MyAccessibilityService\n"
             )
             cmds.add("settings put secure accessibility_enabled 1\n")
             val result = ShellUtils.execCommand(cmds, true, true)
@@ -232,7 +232,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         fun enableAccessibilityByShizuku(isRoot: Boolean): Int {
             val (first, second) = execute(
-                "settings put secure enabled_accessibility_services " + Constant.pkg + "/cn.martinkay.autocheckinplugin.service.MyAccessibilityService\n",
+                "settings put secure enabled_accessibility_services " + Constant.pkg + "/cn.martinkay.checkin.service.MyAccessibilityService\n",
                 true
             )
             val (first1, second1) = execute("settings put secure accessibility_enabled 1\n", true)
