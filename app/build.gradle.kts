@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "cn.martinkay.autocheckinplugin"
+    namespace = "cn.martinkay.autocheckinpluginplus"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "cn.martinkay.autocheckinplugin"
+        applicationId = "cn.martinkay.autocheckinpluginplus"
         minSdk = 24
         targetSdk = 34
         versionCode = 23
